@@ -1,47 +1,72 @@
-import React from 'react';
-import {Link} from 'react-router-dom';
-import AuthForm from './AuthForm';
-
+import React from "react";
+import reactDom from "react-dom";
+import AuthRegForm from "./AuthRegForm/AuthRegForm";
+import "./AuthRegForm/AuthRegForm.css";
 
 function Register(props) {
+    const [inputValues, setInputValues] = React.useState({
+        registerEmail: "",
+        registerPassword: "",
+    });
 
-  // Стейты инпутов
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+    const handleChange = (event) => {
+        setInputValues({
+            ...inputValues,
+            [event.target.name]: event.target.value,
+        });
+        // props.handleValidity(event.target);
+        console.log(inputValues);
+    };
 
-  // Обработчики изменения состояния инпутов
-  function handleChangeEmail(evt) {
-    setEmail(evt.target.value);
-  }
+    function handleSubmit(e) {
+        e.preventDefault();
+        props.onSubmit(inputValues);
+    }
 
-  function handleChangePassword(evt) {
-    setPassword(evt.target.value);
-  }
-
-  // Обработчик формы
-  function handleSubmit(evt) {
-    evt.preventDefault();
-    props.onRegister({email, password});
-  }
-
-
-  return (
-    <div className='auth auth_type_registr container__auth'>
-      <AuthForm
-        isForm={'registr'}
-        isEmail={email}
-        isPassword={password}
-        onEmail={handleChangeEmail}
-        onPassword={handleChangePassword}
-        onSubmit={handleSubmit}
-        textButton={'Зарегистрироваться'}
-      />
-      <div className='auth__sign-in'>
-        <p className='auth__registration-request-text'>Уже зарегистрированы?</p>
-        <Link to='/sign-in' className='auth__login-link'>Войти</Link>
-      </div>
-    </div>
-  )
+    return (
+        <AuthRegForm
+            onSubmit={handleSubmit}
+            formText="Регистрация"
+            buttonText="Зарегистрироваться"
+            name="register"
+            redirect="/sign-in"
+            regLink="Уже зарегистрированы? Войти"
+            children={
+                <>
+                    <input
+                        value={inputValues.registerEmail || ""}
+                        type="email"
+                        onChange={handleChange}
+                        className="authRegForm__field"
+                        placeholder="Email"
+                        name="registerEmail"
+                        id="registerEmail"
+                        required
+                        minLength="2"
+                        maxLength="40"
+                    />
+                    <span className="error" id="name-error">
+                        {/* {props.validity.message.editName} */}
+                    </span>
+                    <input
+                        value={inputValues.registerPassword || ""}
+                        type="password"
+                        onChange={handleChange}
+                        className="authRegForm__field"
+                        name="registerPassword"
+                        placeholder="Пароль"
+                        id="registerPassword"
+                        required
+                        minLength="2"
+                        maxLength="200"
+                    />
+                    <span className="error" id="profession-error">
+                        {/* {props.validity.message.editDescription} */}
+                    </span>
+                </>
+            }
+        />
+    );
 }
 
 export default Register;

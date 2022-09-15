@@ -1,42 +1,70 @@
-import React from 'react';
-import AuthForm from './AuthForm';
+import React from "react";
+import reactDom from "react-dom";
+import AuthRegForm from "./AuthRegForm/AuthRegForm";
+import "./AuthRegForm/AuthRegForm.css";
 
-function Login(props) {
-  // Стейты инпутов
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+function LogIn(props) {
+    const [inputValues, setInputValues] = React.useState({
+        logInEmail: "",
+        logInPassword: "",
+    });
 
-  // Обработчики изменения состояния инпутов
-  function handleChangeEmail(evt) {
-    setEmail(evt.target.value);
-  }
+    const handleChange = (event) => {
+        setInputValues({
+            ...inputValues,
+            [event.target.name]: event.target.value,
+        });
+        // props.handleValidity(event.target);
+    };
 
-  function handleChangePassword(evt) {
-    setPassword(evt.target.value);
-  }
+    function handleSubmit(e) {
+        e.preventDefault();
+        props.onSubmit(inputValues);
+    }
 
-  // Обработчик формы
-  function handleSubmit(evt) {
-    evt.preventDefault();
-    props.onLogin({email, password});
-  }
-
-
-  return (
-    <div className='auth auth_type_login container__auth'>
-      <AuthForm
-        isForm={'login'}
-        isEmail={email}
-        isPassword={password}
-        onEmail={handleChangeEmail}
-        onPassword={handleChangePassword}
-        onSubmit={handleSubmit}
-        textButton={'Войти'}
-      />
-
-      <div className='auth__sign-up'></div>
-    </div>
-  )
+    return (
+        <AuthRegForm
+            onSubmit={handleSubmit}
+            formText="Вход"
+            buttonText="Войти"
+            name="logIn"
+            regLink=""
+            children={
+                <>
+                    <input
+                        type="email"
+                        onChange={handleChange}
+                        value={inputValues.logInEmail || ""}
+                        className="authRegForm__field"
+                        placeholder="Email"
+                        name="logInEmail"
+                        id="logInEmail"
+                        required
+                        minLength="2"
+                        maxLength="40"
+                    />
+                    <span className="error" id="name-error">
+                        {/* {props.validity.message.editName} */}
+                    </span>
+                    <input
+                        value={inputValues.logInPassword || ""}
+                        type="password"
+                        onChange={handleChange}
+                        className="authRegForm__field"
+                        name="logInPassword"
+                        placeholder="Пароль"
+                        id="logInPassword"
+                        required
+                        minLength="2"
+                        maxLength="200"
+                    />
+                    <span className="error" id="profession-error">
+                        {/* {props.validity.message.editDescription} */}
+                    </span>
+                </>
+            }
+        />
+    );
 }
 
-export default Login;
+export default LogIn;

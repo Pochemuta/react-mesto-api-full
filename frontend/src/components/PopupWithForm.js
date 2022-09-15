@@ -1,32 +1,66 @@
-import React from 'react';
+import React from "react";
 
-function PopupWithForm(props) {
+class PopupWithForm extends React.Component {
+    constructor(props) {
+        super(props);
+    }
 
+    handleOverlay = (e) => {
+        if (e.target === e.currentTarget) {
+            this.props.onCloseAll();
+        }
+        // const popups = Array.from(document.querySelectorAll(".popup"));
+        // e.stopPropagation();
+        // popups.forEach((el) => {
+        //     e.target === el && this.props.onCloseAll();
+        // });
+    };
 
-  return (
-    <div className={`popup ${props.isOpen ? 'popup_active' : ''} popup_type_${props.name}`}
-         onMouseDown={props.onPopupClick}
-    >
-      <div className='popup__container'>
-        <h2 className='popup__title'>{props.title}</h2>
-        <form
-          className={`popup__form popup__form_type_${props.name}`}
-          name={`form-${props.name}`}
-          onSubmit={props.onSubmit}
-        >
-          {props.children}
-          <button className='popup__submit-button' type='submit'>
-            {props.isLoading ? 'Сохранение...' : props.textButton}
-          </button>
-        </form>
-        <button
-          className='popup__close'
-          type='button'
-          onClick={props.onClose}
-        />
-      </div>
-    </div>
-  )
+    render() {
+        return (
+            <article
+                onMouseUp={this.handleOverlay}
+                className={`popup popup_${this.props.name} ${
+                    this.props.isOpen && "popup_opened"
+                }`}
+            >
+                <div className="popup__container">
+                    <h2 className="popup__title">{this.props.title}</h2>
+                    <form
+                        onSubmit={this.props.onSubmit}
+                        className={`form form_${this.props.name}`}
+                        name={`${this.props.name}`}
+                        id={`form_${this.props.name}ID`}
+                    >
+                        {this.props.children}
+                        <button
+                            type="submit"
+                            className={`popup__submit 
+                            ${!this.props.validButton && "ssubmit-invalid"}`}
+                        >
+                            Сохранить
+                        </button>
+                    </form>
+                    <button
+                        className={`popup__close popup_${this.props.name}`}
+                        type="button"
+                        onClick={this.props.onCloseAll}
+                    ></button>
+
+                    {this.props.loader && (
+                        <div className="circ">
+                            <div className="circ_load">Loading . . . </div>
+                            <div className="circ_hands"></div>
+                            <div className="circ_body"></div>
+                            <div className="circ_head">
+                                <div className="circ_eye"></div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </article>
+        );
+    }
 }
 
 export default PopupWithForm;

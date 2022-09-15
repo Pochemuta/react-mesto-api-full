@@ -1,57 +1,90 @@
 const express = require('express');
-require('dotenv').config();
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const cors = require('cors');
+const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const { celebrate, Joi } = require('celebrate');
 const { errors } = require('celebrate');
-const routes = require('./routes');
-const { PORT, DB_ADDRESS } = require('./utils/config');
-const { createUser, login } = require('./controllers/users');
-const auth = require('./middlewares/auth');
-const errorHandler = require('./middlewares/error-handler');
-const { signupValidation, signinValidation } = require('./middlewares/joi-validation');
+const validator = require('validator');
+const cardRouter = require('./routers/cardRouter');
+const userRouter = require('./routers/userRouter');
+const { login } = require('./controllers/userControllers/login');
+const { createUser } = require('./controllers/userControllers/createUser');
+const { auth } = require('./middlewares/auth');
+const { ValError } = require('./errors/ValError');
+const { NoSuchRouteError } = require('./errors/NoSuchRouteError');
+
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { cors } = require('./middlewares/cors');
+
+mongoose.connect('mongodb://localhost:27017/mestodb');
 
 const app = express();
-// Подключение к БД
-mongoose.connect(DB_ADDRESS, {
-  useNewUrlParser: true,
-});
+app.use(cors);
 
-// CORS
-const corsOptions = {
-  origin: [
-    'https://mesto-frontend.andrey-g.nomoredomains.xyz',
-    'http://mesto-frontend.andrey-g.nomoredomains.xyz',
-    'http://localhost:3001',
-  ],
-  credentials: true,
-};
-app.use(cors(corsOptions));
-
-// Сборка данных в JSON-формат
 app.use(bodyParser.json());
-// Парсер кук
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  }),
+);
 app.use(cookieParser());
-// Логгер запросов
+
 app.use(requestLogger);
 
-// Роуты регистрации и авторизации (незащищенные)
-app.post('/signup', signupValidation, createUser);
-app.post('/signin', signinValidation, login);
-// Мидлвэр авторизации
+app.post(
+  '/signin',
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(6).max(20),
+    }),
+  }),
+  login,
+);
+app.post(
+  '/signup',
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      name: Joi.string(),
+      about: Joi.string(),
+      avatar: Joi.string()
+        .min(2)
+        .custom((value) => {
+          if (
+            !validator.isURL(value, {
+              require_protocol: true,
+            })
+          ) {
+            throw new ValError();
+          }
+          return value;
+        }),
+      password: Joi.string(),
+    }),
+  }),
+  createUser,
+);
+
 app.use(auth);
-// Остальные роуты (защищенные)
-app.use(routes);
 
-// Логгер ошибок
+app.use('/', cardRouter);
+app.use('/', userRouter);
+app.use((req, res, next) => {
+  // res.status(404).send({ message: 'Чет ниработает ничо, ну соре тогда' });
+  next(new NoSuchRouteError());
+});
+
 app.use(errorLogger);
-// Обработчик ошибок celebrate
 app.use(errors());
-// Обработчик ошибок
-app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`App started on port ${PORT}`);
+app.use((err, req, res, next) => {
+  res.status(err.statusCode === undefined ? 500 : err.statusCode).send({
+    message: `${err.message} thats it`,
+  });
+  next();
+});
+
+app.listen(3000, () => {
+  console.log('ПОРТ ЕБОШИТ КАК КОНЬ');
 });

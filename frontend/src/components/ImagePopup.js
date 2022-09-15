@@ -1,20 +1,39 @@
-import React from 'react';
+import React from "react";
 
 function ImagePopup(props) {
-  return (
-    <div className={`popup ${props.card ? 'popup_active' : ''} popup_type_card-view`} onClick={props.onPopupClick}>
-      <div className='popup__card-view-container'>
-        <img src={props.card ? props.card.link : ''} alt={props.card ? props.card.name : ''}
-             className='popup__card-view-photo'/>
-        <p className='popup__card-view-caption'>{props.card ? props.card.name : ''}</p>
-        <button
-          className='popup__close'
-          type='button'
-          onClick={props.onClose}
-        />
-      </div>
-    </div>
-  )
+    function handleOverlay(e) {
+        // const popups = Array.from(document.querySelectorAll(".popup"));
+        // e.stopPropagation();
+        // popups.forEach((el) => {
+        //     e.target === el && props.onClose();
+        // });
+        if (e.target === e.currentTarget) {
+            props.onClose();
+        }
+    }
+
+    return (
+        <article
+            onClick={handleOverlay}
+            className={`popup popup_${props.name} ${
+                props.isOpen && "popup_opened"
+            }`}
+        >
+            <div className="popup__wrapper">
+                <img
+                    className="popup__illustration"
+                    src={`${props.card.link}`}
+                    alt="Картинка места"
+                />
+                <h2 className="popup__image-title">{props.card.name}</h2>
+                <button
+                    className="popup__close popup__close_opened-image"
+                    onClick={props.onClose}
+                    type="button"
+                ></button>
+            </div>
+        </article>
+    );
 }
 
 export default ImagePopup;
