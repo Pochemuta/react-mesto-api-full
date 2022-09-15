@@ -1,0 +1,12 @@
+.header__nav {
+    font-size: 18px;
+    font-weight: 400;
+    display: flex;
+    flex-direction: row;
+    color: #FFF;
+    text-decoration: none;
+    text-align: center;
+    vertical-align: middle;
+    align-items: center;
+    
+}

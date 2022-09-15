@@ -1,93 +1,108 @@
-class Api {
-  constructor(config) {
-    this._url = config.url;
-    this._headers = config.headers;
-  }
-
-  checkRes(res) {
-    if (res.ok) {
-      return res.json();
+export default class Api {
+    constructor(options){
+        this._url = options.baseUrl
+        this._headers = options.headers 
     }
-    return Promise.reject(`Ошибка: ${res.status}`);
-  }
 
-  getInitialCards() {
-    return fetch(this._url + "/cards", {
-      method: "GET",
-      headers: this._headers,
-    }).then((res) => {
-      return this.checkRes(res);
-    });
-  }
+    _errCheck(res) {
+        if(res.ok) {
+            return res.json()
+        }
 
-  getUserInfo() {
-    return fetch(this._url + "/users/me", {
-      method: "GET",
-      headers: this._headers,
-    }).then((res) => {
-      return this.checkRes(res);
-    });
-  }
+        return Promise.reject(`Ошибка API -> ${res.status}`)
+    }
 
-  editUserInfo(data) {
-    return fetch(this._url + "/users/me", {
-      method: "PATCH",
-      headers: this._headers,
-      body: JSON.stringify(data),
-    }).then((res) => {
-      return this.checkRes(res);
-    });
-  }
+    _useHeaders() {
+        const token = localStorage.getItem('token')
+        return {
+            'Authorization' : `Bearer ${token}`,
+            ...this._headers
+        }
+    }
 
-  editUserAva(data) {
-    return fetch(this._url + "/users/me/avatar", {
-      method: "PATCH",
-      headers: this._headers,
-      body: JSON.stringify(data),
-    }).then((res) => {
-      return this.checkRes(res);
-    });
-  }
 
-  addNewCard(data) {
-    return fetch(this._url + "/cards", {
-      method: "POST",
-      headers: this._headers,
-      body: JSON.stringify(data),
-    }).then((res) => {
-      return this.checkRes(res);
-    });
-  }
+    getUserFromSrv() {
+        return fetch(`${this._url}/users/me`, {
+            method: 'GET',
+            headers: this._useHeaders()
+        })
+        .then(this._errCheck)
+    }
 
-  deleteCard(cardId) {
-    return fetch(this._url + `/cards/${cardId}`, {
-      method: "DELETE",
-      headers: this._headers,
-    }).then((res) => {
-      return this.checkRes(res);
-    });
-  }
+    getInitialCards() {
+       return fetch(`${this._url}/cards`, {
+        method: 'GET',
+        headers: this._useHeaders()
+       })
+       .then(this._errCheck)
+    }
 
-  changeLikeCardStatus(cardId, isLiked) {
-    return fetch(this._url + `/cards/${cardId}/likes`, {
-      method: `${isLiked ? "DELETE" : "PUT"}`,
-      headers: this._headers,
-    }).then((res) => {
-      return this.checkRes(res);
-    });
-  }
+    patchProfile(data) {
+        return fetch(`${this._url}/users/me`, {
+            method: 'PATCH',
+            headers: this._useHeaders(),
+            body: JSON.stringify({
+                name: data.username,
+                about: data.job
+            })
+        })
+        .then(this._errCheck)
+    }
+
+    sendNewImage(data) {
+        return fetch(`${this._url}/cards`, {
+            method: 'POST',
+            headers: this._useHeaders(),
+            body: JSON.stringify({
+                name: data.name,
+                link: data.link
+            })
+        })
+        .then(this._errCheck)
+    }
+
+    deleteCardFromSrv(data) {
+        return fetch(`${this._url}/cards/${data._id}`, {
+            method: 'DELETE',
+            headers: this._useHeaders()
+        })
+        .then(this._errCheck)
+    }
+
+
+    sendLike(_id) {
+        return fetch(`${this._url}/cards/${_id}/likes`, {
+          method: 'PUT',
+          headers: this._useHeaders(),
+        })
+          .then(this._errCheck)
+      }
+
+    deleteLike(_id) {
+        return fetch(`${this._url}/cards/${_id}/likes`, {
+          method: 'DELETE',
+          headers: this._useHeaders(),
+        })
+          .then(this._errCheck)
+    }
+
+    avatarUpload(avatar) {
+        return fetch(`${this._url}/users/me/avatar`, {
+            method: 'PATCH',
+            headers: this._useHeaders(),
+            body: JSON.stringify({
+                avatar: avatar.avalink
+            })
+          })
+            .then(this._errCheck)
+    }
+
 }
 
-//
+export const api = new Api({
 
-const jwt = localStorage.getItem("jwt");
-
-const api = new Api({
-  url: "https://api.kurbangaliev1987.nomoredomains.work",
-  headers: {
-    authorization: `Bearer ${jwt}`,
-    "Content-Type": "application/json",
-  },
-});
-
-export default api;
+    baseUrl: 'http://api.darkwingduck.nomoredomains.xyz',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })

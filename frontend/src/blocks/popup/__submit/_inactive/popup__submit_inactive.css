@@ -1,0 +1,16 @@
+.popup__submit_inactive {
+    color: #000000;
+    opacity:0.1;
+    background: #ffffff;
+    pointer-events: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* .popup__submit_inactive:hover {
+    opacity: 0.1;
+    cursor: initial;
+    
+} */

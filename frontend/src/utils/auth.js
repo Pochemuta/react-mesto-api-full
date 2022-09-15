@@ -1,43 +1,63 @@
-export const BASE_URL = 'https://api.bakirov.students.nomoredomains.work';
+export const baseUrl = 'http://api.darkwingduck.nomoredomains.xyz'
 
-const HEADERS = {
-  'Accept': 'application/json',
-  'Content-Type': 'application/json',
+function errCheck(res) {
+    if(res.ok) {
+        return res.json()
+    }
+
+    return Promise.reject(`Ошибка API -> ${res.status}`)
 }
 
-export const register = (password, email) => {
-  return fetch(`${BASE_URL}/signup`, {
-    credentials: 'include',
-    method: 'POST',
-    headers: HEADERS,
-    body: JSON.stringify({password, email})
-  })
-  .then(checkResponse)
-};
+export function register(email, password) {
+    return fetch(`${baseUrl}/signup`, {
+        method: 'POST',
+        headers: {
+            'Accept': "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({email, password})
+    })
+    .then(errCheck)
+}
 
-export const authorize = (password, email) => {
-  return fetch(`${BASE_URL}/signin`, {
-    credentials: 'include',
-    method: 'POST',
-    headers: HEADERS,
-    body: JSON.stringify({ password, email })
-  })
-    .then(checkResponse)
-};
 
-export const logOut = () => {
-  return fetch(`${BASE_URL}/signout`, {
-    credentials: 'include',
-    method: 'DELETE',
-    headers: HEADERS,
-  })
-    .then(checkResponse)
-};
+export const login = ({email, password}) => {
+    return fetch(`${baseUrl}/signin`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+         email, password
+      })
+    })
+    .then((res) => {
+      return errCheck(res)
+    })
+    .then((data) => {
+      if (data) {
+        localStorage.setItem('token', data.token);
+      }
+      console.log(data)
+      return data;
+      
+    })
+  }
 
-const checkResponse = (res) => {
-  if (res.ok) {
-    return res.json();
-  } else {
-    return Promise.reject(`Ошибка: ${res.status}`);
-  };
-};
+export const checkToken = (token) => {
+  return fetch(`${baseUrl}/users/me`, {
+    method: 'GET',
+    headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+      "Authorization" : `Bearer ${token}`
+    }
+  })
+  .then((res) => {
+    return errCheck(res)
+  })
+  .then((data) => {
+    return (data)
+  })
+}

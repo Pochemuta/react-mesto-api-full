@@ -1,17 +1,18 @@
-function ImagePopup({ title, src, onClose, isOpen }) {
-  return (
-    <section className={`popup popup-image ${isOpen && "popup_is-opened"}`}>
-      <div className="popup-image__container">
-        <button
-          className="popup__close"
-          type="button"
-          onClick={onClose}
-        ></button>
-        <img src={src} alt={title} className="popup-image__img" />
-        <h2 className="popup-image__title">{title}</h2>
-      </div>
-    </section>
-  );
-}
+import React from "react";
 
-export default ImagePopup;
+export default function ImagePopup(props) {
+    
+    return (
+        // {/* <!--Попап картинки--> */}
+
+        <div className={`popup image-popup ${props.card ? 'popup_open' :''}`} onClick={props.onClickOnOverlay}>
+            <div className="image-popup__wrap">
+                <button className="image-popup__close-button popup__close-button" type="button"
+                        id="#image-popup__close-button" onClick={props.onClose}></button>
+                <img className="image-popup__image"
+                     src={props.card ? props.card.link : ''} alt={props.card ? props.card.name : ''}/>
+                <h3 className="image-popup__description">{props.card ? props.card.name : ''}</h3>
+            </div>
+        </div>
+    )
+}   

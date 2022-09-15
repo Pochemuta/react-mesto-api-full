@@ -1,0 +1,20 @@
+.register__input{
+    max-width: 356px;
+    min-width: 356px;
+    width: 100%;
+    margin-top: 30px;
+    border-style: none;
+    border-bottom: 2px #ccc solid;
+    padding-bottom: 13px;
+    background-color: black;
+    color: #FFFFFF;
+    line-height: 17px;
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 0px;
+}
+
+
+.register__input:first-of-type {
+    margin-top: 50px;
+}

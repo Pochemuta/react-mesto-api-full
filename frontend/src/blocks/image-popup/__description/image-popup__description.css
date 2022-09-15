@@ -1,0 +1,7 @@
+.image-popup__description {
+    max-width: 291px;
+    display: flex;
+    margin: 10px 0;
+    font-size: 12px;
+    font-weight: 400;
+}

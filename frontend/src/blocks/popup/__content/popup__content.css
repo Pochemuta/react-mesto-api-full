@@ -1,12 +1,15 @@
 .popup__content {
-  display: flex;
-  flex-direction: column;
-  width: calc(100% - 72px);
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 430px;
+    width: 100%;
 }
 
-@media (max-width: 525px) {
-  .popup__content {
-    width: calc(100% - 44px);
-  }
+@media screen and (max-width:540px) {
+    .popup__content {
+        max-width: 282px;
+    }
 }
-

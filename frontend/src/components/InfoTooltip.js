@@ -1,15 +1,21 @@
-import React from 'react';
+import React from 'react'
+import Union from '../images/Union.svg'
+import UnionErr from '../images/Union-err.svg'
+
 
 function InfoTooltip(props) {
-  return (
-    <section className={`popup popup__${props.name} ${props.isOpen && 'popup_opened'}`}>
-      <div className="popup__container">
-        <button type="button" className="popup__button-clouse" aria-label="Close" onClick={props.onClose}></button>
-        <img className="popup__image" src={props.image} alt="Information" />
-        <h2 className="popup__title popup__title-tooltip">{props.title}</h2>
-      </div>
-    </section>
-  )
-};
+    
+    return (
+        <div className={`popup ${props.isOpen ? `popup_open`: ""}`} onClick={props.onClickOnOverlay}>
+            <div className="popup__container">
+                <div className="image-popup__wrap">
+                    <img className='popup__tooltip-image' alt='tooltip' src={!props.isErrMsg ? Union : UnionErr}/>
+                    <h2 className='popup__registration-message'>{!props.isErrMsg ? 'Вы успешно зарегистрировались!' : 'Что-то пошло не так! Попробуйте ещё раз.'}</h2>
+                    <button className='popup__close-button' type='button' onClick={props.onClose}/>
+                </div>
+            </div>
+        </div>
+    )
+}
 
-export default InfoTooltip;
+export default InfoTooltip

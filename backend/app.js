@@ -1,37 +1,27 @@
-/* eslint-disable no-useless-escape */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-console */
 require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
+
 const bodyParser = require('body-parser');
-const {
-  celebrate,
-  Joi,
-  isCelebrateError,
-} = require('celebrate');
-const cors = require('cors');
-const userRouter = require('./routes/users');
-const cardRouter = require('./routes/cards');
-const { createUser, login } = require('./controllers/users');
-const auth = require('./middlewares/auth');
-const NotFoundError = require('./errors/NotFoundError');
+const mongoose = require('mongoose');
+const { errors } = require('celebrate');
+const cors = require('./middlewares/cors');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const routes = require('./routes');
+const errorHandler = require('./utils/error-handler');
+const NotFound = require('./utils/not-found');
+const { login, postUser } = require('./controllers/users');
+const auth = require('./middlewares/auth');
+const { signupValidity, loginValidity } = require('./middlewares/validation');
 
 const { PORT = 3000 } = process.env;
-
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-  useNewUrlParser: true,
+mongoose.connect('mongodb://localhost:27017/mestodb', () => {
+  console.log('подключение к базе данных прошло успешно');
 });
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use(cors());
-
-app.use(requestLogger);
+app.use(cors);
 
 app.get('/crash-test', () => {
   setTimeout(() => {
@@ -39,49 +29,24 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(3),
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(/(https||http)\:\/\/(w{3}.)?[a-z0-9\-\.\_\~\:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=]+\#?$/),
-  }).unknown(true),
-}), createUser);
+app.use(requestLogger);
 
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(3),
-  }),
-}), login);
+app.post('/signin', loginValidity, login);
+app.post('/signup', signupValidity, postUser);
 
-app.use('/', auth, userRouter);
+app.use(auth);
 
-app.use('/', auth, cardRouter);
+app.use(routes);
+
+app.use((req, res, next) => {
+  next(new NotFound('Не найден маршрут'));
+});
 
 app.use(errorLogger);
 
-app.use((req, res, next) => {
-  next(new NotFoundError('NotFound404'));
-});
-
-app.use((err, req, res, next) => {
-  console.log(err.stack || err);
-  const { statusCode = 500, message } = err;
-
-  if (isCelebrateError(err)) {
-    const [error] = err.details.values();
-    return res.status(400).send({ message: error.message });
-  }
-  res
-    .status(statusCode)
-    .send({
-      message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
-    });
-  return next();
-});
+app.use(errors());
+app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log(`App listening on ${PORT}`);
+  console.log(`серв запущен на ${PORT} порту`);
 });

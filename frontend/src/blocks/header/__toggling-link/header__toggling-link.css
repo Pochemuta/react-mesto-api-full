@@ -1,0 +1,10 @@
+.header__toggling-link{
+    text-align: center;
+    align-content: flex-end;
+    justify-content: center;
+
+}
+
+.header__toggling-link:hover {
+    opacity: 0.6;
+}

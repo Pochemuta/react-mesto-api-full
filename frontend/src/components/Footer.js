@@ -1,9 +1,11 @@
-function Footer() {
-  return (
-    <footer className="footer">
-      <p className="footer__author">&#169; 2021. Mesto Russia</p>
-    </footer>
-  );
-}
+import React from 'react';
 
-export default Footer;
+export default function Footer() {
+    return(
+        <footer>
+            <p className="copyright">
+                © {new Date().getFullYear()} Mesto Russia by Arsen
+            </p>
+        </footer>
+    )
+}

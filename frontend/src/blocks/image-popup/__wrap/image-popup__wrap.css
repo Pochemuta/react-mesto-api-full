@@ -1,0 +1,6 @@
+.image-popup__wrap {
+    position: relative;
+    display: flex;
+    margin: auto;
+    flex-direction: column;
+}

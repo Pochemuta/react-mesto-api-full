@@ -1,37 +1,16 @@
-const PopupWithForm = ({
-  children,
-  name,
-  title,
-  isOpen,
-  onClose,
-  onSubmit,
-}) => {
-  return (
-    <section
-      className={`popup popup_type_${name} ${isOpen && "popup_is-opened"}`}
-    >
-      <div className="popup__container">
-        <button
-          className="popup__close"
-          type="button"
-          onClick={onClose}
-        ></button>
-        <div className="popup__content">
-          <h2 className="popup__title">{title}</h2>
-          <form
-            name={name}
-            className="popup__submit-form popup__submit-form_profile popup__form"
-            onSubmit={onSubmit}
-          >
-            {children}
-            <button type="submit" className="popup__save popup__button">
-              Сохранить
-            </button>
-          </form>
-        </div>
-      </div>
-    </section>
-  );
-};
+import React from "react";
 
-export default PopupWithForm;
+export default function PopupWithForm(props) {
+    return(
+            <div className={`popup ${props.isOpen ? `popup_open`: ""}`} id={`${props.name}-popup`} onClick={props.onClickOnOverlay}>
+                <div className="popup__container">
+                    <form className="popup__content popup__form" name={props.form} autoComplete="off" onSubmit={props.onSubmit}>
+                        <h2 className="popup__header">{props.title}</h2>
+                        {props.children}
+                        <button type="submit " className="popup__submit popup__button">{props.buttonText}</button>
+                        <button className="popup__close-button" type="button" onClick={props.onClose}></button>
+                    </form>
+                </div>
+            </div>
+    )
+}

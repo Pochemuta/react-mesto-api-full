@@ -1,40 +1,35 @@
-import React from "react";
-import headerLogo from "../images/header__logo.svg";
-import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import { Link, Switch, Route } from "react-router-dom";
+import React from 'react';
+import { withRouter, useLocation, Link } from 'react-router-dom';
+import logo from "../images/logo.svg";
 
-export default function Header(props) {
-  const currentUser = React.useContext(CurrentUserContext);
+function Header(props) {
+    const { somePath } = useLocation()
 
-  return (
-    <header className="header">
-      <img src={headerLogo} alt="Место" className="header__logo" />
+    const linkPath = `${ somePath === '/sign-up' ? '/sign-in' : '/sign-up'}`
+    const linkName = `${ somePath === '/sign-in' ? 'Войти' : 'Регистрация'}` 
 
-      <Switch>
-        <Route exact path="/">
-          <>
-            <div className="header__container">
-              <p className="header__mail">{currentUser.email}</p>
-              <button className="header__button" onClick={props.onClick}>
-                Выйти
-              </button>
-            </div>
-          </>
-        </Route>
- 
-      <Route path="/sign-up">
-        <Link to="/sign-in" className="header__link">
-          Войти
-        </Link>
-      </Route>
-
-      <Route path="/sign-in">
-        <Link to="/sign-up" className="header__link">
-          Регистрация
-        </Link>
-        </Route>
-        
-      </Switch>
-    </header>
-  );
+    function signOut() {
+        props.setIsLoggedIn(false)
+        localStorage.removeItem('token')
+        props.history.push('/sign-up')
+        // console.log('token')
+    }
+    
+    return(
+        <header className="header">
+            <img src={logo} className="header__logo" alt="Логотип"/>
+            <nav className='header__nav'>
+                {props.isLoggedIn ?
+                    <>
+                        <p className='header__nav header__mail'>{props.email}</p>
+                        <Link to='/sign-in' className='header__nav header__toggling-link' type='button' onClick={signOut}>Выйти</Link>
+                    </>
+                     : (<Link to={linkPath} className='header__nav header__toggling-link' type='button'>{linkName}</Link>)
+            }
+            </nav>
+        </header>
+    )
+    
 }
+
+export default withRouter(Header)

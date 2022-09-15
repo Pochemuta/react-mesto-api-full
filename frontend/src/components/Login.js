@@ -1,43 +1,52 @@
-import React, { useState } from 'react';
+import React from "react";
+import { withRouter } from 'react-router-dom';
 
-export default function Login({handleAuthorization}) {
+class Login extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      username: '',
+      password: ''
+    }
+    this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleChange = this.handleChange.bind(this)
+    this.nameButton = props.nameButton
+  }
 
-  const [data, setData] = useState({
-    email: "",
-    password: "",
-  });
-
-  const handleChange = (evt) => {
-    const { name, value } = evt.target;
-    setData({
-      ...data,
+  handleChange(event) {
+    const target = event.target
+    const value = target.value
+    const name = target.name
+    this.setState({
       [name]: value
-    });
-  };
+    })
+  }
 
-  const handleSubmit = (evt) => {
-    evt.preventDefault();
-    handleAuthorization(data);
-  };
+  handleSubmit(e) {
+    e.preventDefault()
+    if (!this.state.username || !this.state.password) {
+      return
+    }
+    this.props.onLogin(this.state.username, this.state.password)
+  }
 
-  return (
-    <form className="auth__form" onSubmit={handleSubmit}>
-      <h2 className="auth__title">Вход</h2>
-      <input
-        className="auth__input"
-        placeholder="Email"
-        type="email"
-        name="email"
-        onChange={handleChange}>
-      </input>
-      <input
-        className="auth__input"
-        placeholder="Пароль"
-        type="password"
-        name="password"
-        onChange={handleChange}>
-      </input>
-      <button type="submit" className="auth__submit-button">Войти</button>
-    </form>
-  )
+  render() {
+    return (
+      <>
+      <div className="register">
+        
+        <form className="register__form" onSubmit={this.handleSubmit}>
+        <h2 className="register__title">Вход</h2>
+          <input  id="username" name="username" value={this.state.username} 
+          onChange={this.handleChange} className="register__input" type="text" placeholder="Email" required />
+          <input id="password" name="password" value={this.state.password} 
+          onChange={this.handleChange} className="register__input" type="password" placeholder="Пароль" required />
+          <button className="register__submit" type="submit">Войти</button>
+        </form>
+      </div>
+      </>
+    )
+  }
 }
+
+export default withRouter(Login)

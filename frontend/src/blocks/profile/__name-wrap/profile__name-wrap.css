@@ -1,0 +1,7 @@
+.profile__name-wrap {
+    padding-bottom: 16px;
+    max-width: 336px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}

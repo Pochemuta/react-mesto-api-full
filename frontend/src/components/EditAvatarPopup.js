@@ -1,35 +1,48 @@
 import React from "react";
 import PopupWithForm from "./PopupWithForm";
-import AvaForm from "./forms/AvaForm";
 
-export default function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar }) {
-  const inputRef = React.useRef();
+ export default function EditAvatarPopup(props) {
+    const avatar = React.useRef()
 
-  function getAvatarSrc() {
-    return inputRef.current.value;
-  }
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    const src = inputRef.current.value;
-    onUpdateAvatar({
-      avatar: src,
-    });
-  }
+    function handleSubmit(e) {
+        // Запрещаем браузеру переходить по адресу формы
+        e.preventDefault();
+      
+        // Передаём значения управляемых компонентов во внешний обработчик
+        props.onSubmit({
+            avalink: avatar.current.value
+        });
+    }
 
-  React.useEffect(() => {
-    inputRef.current.value=" "
-  }, [isOpen])
+    React.useEffect(() => {
+        avatar.current.value = ''
+    }, [props.isOpen])
 
-  return (
-    <PopupWithForm
-      name="ava"
-      title="Обновить аватар"
-      isOpen={isOpen}
-      onClose={onClose}
-      onSubmit={handleSubmit}
-    >
-      <AvaForm inputRef={inputRef} getAvatarSrc={getAvatarSrc} />
-    </PopupWithForm>
-  );
+    return (
+        <PopupWithForm
+            isOpen={props.isOpen}
+            onClose={props.onClose}
+            onSubmit={handleSubmit}
+            onClickOnOverlay={props.onClickOnOverlay}
+            form={'update-avatar'}
+            title={'Обновить аватар'}
+            buttonText={'Сохранить'}
+
+            children={(
+                <>
+                    <input 
+                        ref={avatar}
+                        type='url'
+                        className='popup__name popup__input'
+                        name="avalink"
+                        id="avalink"
+                        placeholder="Ссылка на картинку"
+                        required
+                    />
+                    <span className="popup__avalink-error"/>
+                </>
+            )}
+        />
+    )
 }
