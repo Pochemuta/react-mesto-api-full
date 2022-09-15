@@ -1,0 +1,15 @@
+.header__menu-button {
+  height: 32px;
+  width: 32px;
+  border: none;
+  background-color: rgba(0, 0, 0, 0);
+  background-image: url(../../../images/Hamburger_icon_white.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.header__menu-button:hover {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 1s ease;
+}

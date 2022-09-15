@@ -1,0 +1,7 @@
+.header__mobile-menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  text-align: center;
+  margin: 40px auto 40px;
+}

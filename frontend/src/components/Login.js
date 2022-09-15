@@ -1,50 +1,54 @@
-import React, {useState}  from "react";
+import React from "react"
 
-function Login({handleLogin}) {
-  const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
+function Login({ email, password, setEmail, setPassword, handleLogin }) {
 
-  function handleChangePassword(evt) {
-    setPassword(evt.target.value);
-  };
+    function handleChangeEmail(e) {
+        setEmail(e.target.value)
+    }
 
-  function handleChangeEmail(evt) {
-    setEmail(evt.target.value);
-  };
-
-  function handleSubmit(evt) {
-    evt.preventDefault();
-
-    handleLogin(password, email)
-  }
-
+    function handleChangePassword(e) {
+        setPassword(e.target.value)
+    }
 
     return (
-      
-      <div className="login">
-        <p className="login__title">Вход</p>
-        <form onSubmit={handleSubmit} className="login__form">
-          <input 
-          className="login__email-field login__field" 
-          placeholder="Email"
-          name="email"
-          type="email"
-          id="email-field"
-          value={email}
-          onChange={handleChangeEmail} />
-          <input 
-          className="login__password-field login__field" 
-          placeholder="Пароль"
-          name="password"
-          type="password"
-          id="password-field"
-          value={password}
-          onChange={handleChangePassword} />
-          <button className="login__submit-button">Войти</button>
-        </form>
-      </div>
-      
-              );
-  }
-  
-  export default Login;
+        <div className="login">
+            <div className="login__container">
+                <h2 className="login__container-header">Вход</h2>
+                <form
+                    action="#"
+                    className="login__form"
+                    method="GET"
+                    onSubmit={handleLogin}
+                >
+                    <fieldset className="login__form-settings">
+                        <input
+                            name="email"
+                            id="email-input"
+                            type="email"
+                            className="login__input"
+                            required
+                            minLength="2"
+                            maxLength="40"
+                            placeholder="Email"
+                            onChange={handleChangeEmail}
+                            value={email || ""} />
+                        <input
+                            name="password"
+                            id="password-input"
+                            type="password"
+                            className="login__input"
+                            required
+                            minLength="5"
+                            maxLength="20"
+                            placeholder="Пароль"
+                            onChange={handleChangePassword}
+                            value={password || ""} />
+                        <button className="login__button" type="submit">Войти</button>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    )
+}
+
+export default Login

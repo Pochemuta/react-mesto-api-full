@@ -1,0 +1,10 @@
+.login__signin-link {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 17px;
+    align-self: center;
+    color: white;
+    text-decoration: none;
+    margin-top: 15px;
+}

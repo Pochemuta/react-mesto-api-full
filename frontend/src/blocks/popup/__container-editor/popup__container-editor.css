@@ -1,0 +1,14 @@
+.popup__container-editor {
+    width: 430px;
+    background-color: #fff;
+    border-radius: 10px;
+    align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+}
+
+@media screen and (max-width: 490px) {
+    .popup__container-editor {
+        width: 282px;
+    }
+  }

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { isURL } = require('validator');
+const validator = require('validator');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -12,26 +12,27 @@ const cardSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (v) => isURL(v),
-      message: 'Поле "link" должно быть валидным URL-адресом',
+      validator(v) {
+        return validator.isURL(v);
+      },
+      message: 'ссылка не валидна',
     },
   },
   owner: {
-    type: mongoose.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
     required: true,
   },
-  likes: [
-    {
-      type: mongoose.Types.ObjectId,
-      ref: 'user',
-      default: [],
-    },
-  ],
+  likes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user',
+    default: [],
+  }],
   createdAt: {
     type: Date,
-    default: Date.now(),
+    default: Date.now,
   },
 });
 
-module.exports = mongoose.model('card', cardSchema);
+const Card = mongoose.model('card', cardSchema);
+module.exports = Card;

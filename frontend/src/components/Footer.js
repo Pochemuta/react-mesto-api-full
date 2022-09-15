@@ -1,11 +1,9 @@
 function Footer() {
-  return (
-    
-    <footer className="footer container__footer">
-        <p className="footer__copyrate">&copy; {new Date().getFullYear()}</p>
-    </footer>
-    
-            );
+    return (
+        <footer className="footer">
+            <p className="footer__copyright">© 2021 Mesto Russia</p>
+        </footer>
+    )
 }
 
-export default Footer;
+export default Footer

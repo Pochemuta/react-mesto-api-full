@@ -1,83 +1,49 @@
-require('dotenv').config();
 const express = require('express');
+const { celebrate, errors } = require('celebrate');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const { celebrate, Joi, errors } = require('celebrate'); // Ну с "errors" я канеш ступил)
+require('dotenv').config();
 const cors = require('cors');
-const userRouter = require('./routes/users');
-const cardRouter = require('./routes/cards');
-const auth = require('./middlewares/auth');
-const { createUser, login } = require('./controllers/users');
+const { userRouter } = require('./routes/user');
+const { cardRouter } = require('./routes/card');
+const { login } = require('./controllers/login');
+const { createUser } = require('./controllers/createUser');
+const { auth } = require('./middlewares/auth');
+const { errorHandler } = require('./middlewares/errorHandler');
 const NotFoundError = require('./errors/NotFoundError');
-const { requestLogger, errorLogger } = require('./middlewares/Logger');
+const { joiSignInScheme, joiSignUpScheme } = require('./utils/validator');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+
+const { PORT = 3000 } = process.env;
 
 const app = express();
-const { PORT = 3000 } = process.env;
-mongoose.connect('mongodb://localhost:27017/mestodb');
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+mongoose.connect('mongodb://localhost:27017/mestodb ', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 app.use(cors());
-app.use(requestLogger); // подключаем логгер запросов
 
+app.use(requestLogger);
 app.get('/crash-test', () => {
   setTimeout(() => {
     throw new Error('Сервер сейчас упадёт');
   }, 0);
 });
+app.post('/signin', express.json(), celebrate(joiSignInScheme), login);
+app.post('/signup', express.json(), celebrate(joiSignUpScheme), createUser);
+app.use('/users', auth, userRouter);
+app.use('/cards', auth, cardRouter);
 
-app.post(
-  '/signup',
-  celebrate({
-    body: Joi.object().keys({
-      email: Joi.string().required().email(),
-      password: Joi.string().required(),
-      name: Joi.string().min(2).max(30),
-      about: Joi.string().min(2).max(30),
-      avatar: Joi.string().pattern(/(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+\.[a-z0-9_-]{2,3}))(:\d{2,5})?((\/.+)+)?\/?#?/m),
-    }),
-  }),
-  createUser,
-);
+app.use(errorLogger);
 
-app.post(
-  '/signin',
-  celebrate({
-    body: Joi.object().keys({
-      email: Joi.string().required().email(),
-      password: Joi.string().required(),
-    }),
-  }),
-  login,
-);
-
-app.use(auth);
-
-app.use('/', userRouter);
-app.use('/', cardRouter);
-
-app.use((req, res, next) => {
-  next(new NotFoundError('Маршрут не найден'));
+app.use('*', (req, res, next) => {
+  next(new NotFoundError('Такой страницы не существует'));
 });
-
-app.use(errorLogger); // подключаем логгер ошибок
-
 app.use(errors());
+app.use(errorHandler);
 
-app.use((err, req, res, next) => {
-  // если у ошибки нет статуса, выставляем 500
-  const { statusCode = 500, message } = err;
-
-  res
-    .status(statusCode)
-    .send({
-      // проверяем статус и выставляем сообщение в зависимости от него
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    });
-  next();
+app.listen(PORT, () => {
+  // eslint-disable-next-line no-console
+  console.log(`App listening on port ${PORT}`);
 });
-
-app.listen(PORT);

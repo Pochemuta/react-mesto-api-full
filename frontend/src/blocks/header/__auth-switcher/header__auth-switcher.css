@@ -1,0 +1,15 @@
+.header__auth-switcher {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 22px;
+    align-self: center;
+    color: white;
+    text-decoration: none;
+}
+
+.header__auth-switcher:hover {
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 1s ease;
+}

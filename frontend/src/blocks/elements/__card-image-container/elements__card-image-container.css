@@ -1,0 +1,5 @@
+.elements__card-image-container {
+    display: flex;
+    flex-direction: row-reverse;
+    min-height: 282px;
+}

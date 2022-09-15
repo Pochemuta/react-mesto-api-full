@@ -1,76 +1,64 @@
-import React, { useContext, useEffect, useState } from "react";
+import React from "react"
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import PopupWithForm from "./PopupWithForm";
-import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-function EditProfilePopup({isOpened, onClose, onUpdateUser}) {
-    const currentUser = useContext(CurrentUserContext);
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
+function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
 
-    useEffect(() => {
-        setName(currentUser.name);
-        setDescription(currentUser.about);
-    }, [currentUser, isOpened]);
+    const [name, setName] = React.useState('');
+    const [description, setDescription] = React.useState('');
 
     function handleChangeName(e) {
-        setName(e.target.value);
-    };
+        setName(e.target.value)
+    }
 
     function handleChangeDescription(e) {
-        setDescription(e.target.value);
-    };
+        setDescription(e.target.value)
+    }
 
-    function handleSubmit(event) {
-        event.preventDefault();
+    const currentUser = React.useContext(CurrentUserContext);
 
+    React.useEffect(() => {
+        setName(currentUser.name);
+        setDescription(currentUser.about);
+    }, [currentUser, isOpen]);
+
+    function handleSubmit(e) {
+        e.preventDefault();
         onUpdateUser({
-            name,
+            name: name,
             about: description,
-          });
+        });
     }
 
     return (
-        <PopupWithForm
-        name={'edit'}
-        title={'Редактировать профиль'}
-        isOpened={isOpened}
-        onClose={onClose}
-        onSubmit={handleSubmit}
-        btnText={'Сохранить'}
-        >
-        <>
-        <input
-             placeholder="Имя"
-             name="name"
-             type="text"
-             className="popup__field"
-             id="name-field"
-             autoComplete="off"
-             required
-             value={name}
-             onChange={handleChangeName}
-             minLength="2"
-             maxLength="40"
-             />
-            <span className="popup__error name-field-error"></span>
-            <input
-             placeholder="Профессия"
-             name="profession"
-             type="text"
-             className="popup__field"
-             id="profession-field"
-             autoComplete="off"
-             required
-             value={description}
-             onChange={handleChangeDescription}
-             minLength="2"
-             maxLength="200"
-             />
-            <span className="popup__error profession-field-error"></span>
-            
-        </>
-      </ PopupWithForm> 
-    );   
-  }
-  
-  export default EditProfilePopup;
+        <PopupWithForm id="profile-popup" title="Редактировать профиль" formId="editProfileForm" isOpen={isOpen} onClose={onClose} onSubmit={handleSubmit}>
+            <fieldset className="popup__form-settings">
+                <input
+                    name="name"
+                    id="name-input"
+                    type="text"
+                    className="popup__input popup__input_type_name"
+                    required
+                    minLength="2"
+                    maxLength="40"
+                    onChange={handleChangeName}
+                    value={name || ""} />
+                <span className="name-input-error"></span>
+                <input
+                    name="about"
+                    id="description-input"
+                    type="text"
+                    className="popup__input popup__input_type_description"
+                    required
+                    minLength="2"
+                    maxLength="200"
+                    onChange={handleChangeDescription}
+                    value={description || ""} />
+                <span className="description-input-error"></span>
+                <button className="popup__button" type="submit">Сохранить</button>
+            </fieldset>
+        </PopupWithForm>
+    )
+}
+
+export default EditProfilePopup

@@ -1,52 +1,52 @@
-import React from "react";
+import React from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
+function Card(props) {
+    const currentUser = React.useContext(CurrentUserContext);
+    const isOwn = props.card.owner === currentUser._id;
+    const isLiked = props.card.likes.some(like => like === currentUser._id);
 
-function Card({ card, onCardClick, onCardLike, onCardDelete }) {
+    const cardDeleteButtonClassName = isOwn ? 'elements__delete-button' : 'elements__delete-button_hidden';
+    const cardLikeButtonClassName = isLiked ? 'elements__like-button elements__like-button_active' : 'elements__like-button';
 
-    function handleClick() {
-        onCardClick(card);
-    };
+    function handleCardClick() {
+        props.onCardClick(props.card);
+    }
 
     function handleLikeClick() {
-        onCardLike(card);
-    };
+        props.onCardLike(props.card)
+    }
 
     function handleDeleteClick() {
-        onCardDelete(card);
-    };
-
-    const translation = React.useContext(CurrentUserContext);
-
-    let isOwn
-
-    if (translation !== undefined) {
-        isOwn = card.owner === translation._id;
+        props.onCardDelete(props.card)
     }
-
-    let isLiked
-
-    let likesLength
-
-    if (card.likes !== undefined) {
-        isLiked = card.likes.some(id => id === translation._id);
-        likesLength = card.likes.length
-    }
-
-    console.log(card.likes, translation._id)
 
     return (
-        <li className="element elements__element">
-            <button onClick={handleDeleteClick} className={`element__delete-button ${isOwn ? 'element__delete-button_visible' : 'element__delete-button_hidden'}`} />
-            <img className="element__image" src={card.src} alt={card.title} onClick={handleClick} />
-            <div className="element__text-info">
-                <h2 className="element__text">{card.title}</h2>
-                <div className="element__container">
-                    <button type="button" onClick={handleLikeClick} className={`element__vector ${isLiked ? 'element__vector_active' : ""}`}></button>
-                    <p className="element__likes">{likesLength}</p>
+        <article className="element-card">
+            <div className="elements__card-image-container">
+                <img
+                    src={props.link}
+                    alt={props.name}
+                    className="elements__card-image"
+                    onClick={handleCardClick} />
+                <button
+                    className={cardDeleteButtonClassName}
+                    type="button"
+                    onClick={handleDeleteClick}>
+                </button>
+            </div>
+            <div className="elements__card-description">
+                <h3 className="elements__place-name">{props.name}</h3>
+                <div className="elements__like">
+                    <button
+                        className={cardLikeButtonClassName}
+                        type="button"
+                        onClick={handleLikeClick}>
+                    </button>
+                    <p className="elements__like-counter">{props.likes}</p>
                 </div>
             </div>
-        </li>
+        </article>
     )
 }
 

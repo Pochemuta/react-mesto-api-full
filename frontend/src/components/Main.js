@@ -1,43 +1,41 @@
-import React, { useContext } from "react";
-import Card from "./Card";
-import { CurrentUserContext, CurrentUserContext1 } from '../contexts/CurrentUserContext';
+import React from 'react';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import Card from './Card';
 
-function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, onCardLike, onCardDelete }) {
+function Main({ cards, onEditAvatar, onEditProfile, onAddPlace, onCardClick, onCardLike, onCardDelete }) {
 
-  const translation = useContext(CurrentUserContext);
-  const translationCards = useContext(CurrentUserContext1);
+    const currentUser = React.useContext(CurrentUserContext);
 
-  return (
-
-    <main>
-      <section className="profile container__profile">
-        <div className="profile__info">
-          <img className="profile__image" src={translation.avatar} alt="Лого" />
-          <button className="profile__pen" onClick={onEditAvatar} />
-          <div className="profile__text">
-            <div className="profile__title">
-              <h1 className="profile__name">{translation.name}</h1>
-              <button type="button" className="profile__edit-button" onClick={onEditProfile}></button>
-            </div>
-            <p className="profile__description">{translation.about}</p>
-          </div>
-        </div>
-        <button type="button" className="profile__add-button" onClick={onAddPlace}></button>
-      </section>
-      <ul className="elements container__elements">
-        {
-          translationCards.map((card) => <Card
-            key={card._id}
-            card={card}
-            onCardClick={onCardClick}
-            onCardLike={onCardLike}
-            onCardDelete={onCardDelete}
-          />)
-        }
-      </ul>
-    </main>
-
-  );
+    return (
+        <main className="content">
+            <section className="profile">
+                <a className="profile__image-link" onClick={onEditAvatar}>
+                    <img src={currentUser.avatar} alt="Аватар" className="profile__avatar" />
+                </a>
+                <div className="profile__container">
+                    <div className="profile__info">
+                        <h1 className="profile__info-name">{currentUser.name}</h1>
+                        <p className="profile__info-description">{currentUser.about}</p>
+                        <button className="profile__edit-button" type="button" onClick={onEditProfile}></button>
+                    </div>
+                    <button className="profile__card-add-button" type="button" onClick={onAddPlace}></button>
+                </div>
+            </section>
+            <section className="elements">
+                {cards.map((card) =>
+                    <Card
+                        card={card}
+                        name={card.name}
+                        link={card.link}
+                        likes={card.likes.length}
+                        key={card._id}
+                        onCardClick={onCardClick}
+                        onCardLike={onCardLike}
+                        onCardDelete={onCardDelete}
+                    />)}
+            </section>
+        </main>
+    )
 }
 
-export default Main;
+export default Main 

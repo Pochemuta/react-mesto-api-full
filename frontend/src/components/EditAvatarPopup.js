@@ -1,42 +1,39 @@
-import React, { useRef } from "react";
+import React from "react"
 import PopupWithForm from "./PopupWithForm";
 
-function EditAvatarPopup({isOpened, onClose, onUpdateAvatar}) {
-    const inputRef = useRef();
-    
+function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar }) {
+
+    const avatarRef = React.useRef();
 
     function handleSubmit(e) {
-      e.preventDefault();
-      console.log('inputRef.current.value', inputRef.current.value)
-      onUpdateAvatar({avatar: inputRef.current.value});
-    };
+        e.preventDefault();
+        onUpdateAvatar({
+            avatar: avatarRef.current.value
+        });
+    }
 
     return (
-        <PopupWithForm
-        name={'avatar'}
-        title={'Обновить аватар'}
-        isOpened={isOpened}
-        onClose={onClose}
-        onSubmit={handleSubmit}
-        btnText={'Сохранить'}
-        >
-        <>
-        <input
-             placeholder="Новый аватар"
-             name="image"
-             type="url"
-             className="popup__field popup__field_avatar"
-             id="avatar-field"
-             autoComplete="off"
-             required
-             /*value=""*/
-             ref={inputRef}
-             />
-            <span className="popup__error avatar-field-error"></span>
-            
-        </>
-      </ PopupWithForm>  
-    );   
-  }
-  
-  export default EditAvatarPopup;
+        <PopupWithForm id="avatar-popup" title="Обновить аватар" formId="editAvatarForm" isOpen={isOpen} onClose={onClose} onSubmit={handleSubmit}>
+            <fieldset className="popup__form-settings">
+                <input
+                    name="avatar"
+                    id="avatar-input"
+                    type="url"
+                    className="popup__input popup__input_type_link"
+                    placeholder="Ссылка на аватар"
+                    required
+                    ref={avatarRef} />
+                <span className="avatar-input-error"></span>
+                <button
+                    id="save-avatar__button"
+                    className="popup__button"
+                    type="submit"
+                >
+                    Сохранить
+                </button>
+            </fieldset>
+        </PopupWithForm>
+    )
+}
+
+export default EditAvatarPopup

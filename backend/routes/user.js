@@ -1,26 +1,16 @@
-const router = require('express').Router();
+const express = require('express');
+const { celebrate } = require('celebrate');
+const { joiUserIdScheme, joiUserAvatarScheme, joiUserInfoScheme } = require('../utils/validator');
 const {
-  getUsers,
-  getCurrentUser,
-  findUser,
-  updateProfile,
-  updateAvatar,
+  getUsers, getUserById, getCurrentUser, updateUserInfo, updateUserAvatar,
 } = require('../controllers/user');
 
-const {
-  validateUserData,
-  validateUserAvatar,
-  validateId,
-} = require('../middlewares/validations');
+const userRouter = express.Router();
 
-router.get('/users', getUsers);
+userRouter.get('/', getUsers);
+userRouter.get('/me', getCurrentUser);
+userRouter.get('/:userId', celebrate(joiUserIdScheme), getUserById);
+userRouter.patch('/me', express.json(), celebrate(joiUserInfoScheme), updateUserInfo);
+userRouter.patch('/me/avatar', express.json(), celebrate(joiUserAvatarScheme), updateUserAvatar);
 
-router.get('/users/me', getCurrentUser);
-
-router.get('/users/:id', validateId, findUser);
-
-router.patch('/users/me', validateUserData, updateProfile);
-
-router.patch('/users/me/avatar', validateUserAvatar, updateAvatar);
-
-module.exports = router;
+module.exports = { userRouter };

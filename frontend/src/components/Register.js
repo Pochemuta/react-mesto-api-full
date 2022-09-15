@@ -1,61 +1,57 @@
-import React, {useState} from "react";
-import { Link } from "react-router-dom";
+import React from "react"
+import { Link } from "react-router-dom"
 
-function Register({handleRegister}) {
-  const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
 
-  function handleChangePassword(evt) {
-    setPassword(evt.target.value);
-  };
+function Register({ email, password, setEmail, setPassword, handleRegister }) {
 
-  function handleChangeEmail(evt) {
-    setEmail(evt.target.value);
-  };
+    function handleChangeEmail(e) {
+        setEmail(e.target.value)
+    }
 
-  function handleSubmit(evt) {
-    evt.preventDefault();
-
-    handleRegister(password, email)
-  };
+    function handleChangePassword(e) {
+        setPassword(e.target.value)
+    }
 
     return (
-      
-      <div className="register">
-        <p className="register__title">Регистрация</p>
-        <form onSubmit={handleSubmit} className="register__form">
-          <input 
-          className="register__email-field register__field" 
-          placeholder="Email"
-          name="email"
-          type="email"
-          id="email-field"
-          value={email}
-          onChange={handleChangeEmail}
-          autoComplete="off"
-          required
-          />
-          <input 
-          className="register__password-field register__field" 
-          placeholder="Пароль"
-          name="password"
-          type="text"
-          id="password-field"
-          value={password}
-          onChange={handleChangePassword}
-          autoComplete="off"
-          required
-          type='password'
-          />
-          <button type="submit" className="register__submit-button">Зарегистрироваться</button>
-        </form>
-        <div className="register__signin">
-          <p className="register__signin-text">Уже зарегистрированы?</p>
-          <Link to="/sign-in" className="register__login-link">Войти</Link>
+        <div className="login">
+            <div className="login__container">
+                <h2 className="login__container-header">Регистрация</h2>
+                <form
+                    action="#"
+                    className="login__form"
+                    method="GET"
+                    onSubmit={handleRegister}
+                >
+                    <fieldset className="login__form-settings">
+                        <input
+                            name="email"
+                            id="email-input"
+                            type="email"
+                            className="login__input"
+                            required
+                            minLength="2"
+                            maxLength="40"
+                            placeholder="Email"
+                            onChange={handleChangeEmail}
+                            value={email || ""} />
+                        <input
+                            name="password"
+                            id="password-input"
+                            type="password"
+                            className="login__input"
+                            required
+                            minLength="5"
+                            maxLength="20"
+                            placeholder="Пароль"
+                            onChange={handleChangePassword}
+                            value={password || ""} />
+                        <button className="login__button" type="submit">Зарегистрироваться</button>
+                        <Link className="login__signin-link" to="/signin">Уже зарегистрированы? Войти</Link>
+                    </fieldset>
+                </form>
+            </div>
         </div>
-      </div>
-      
-              );
-  }
-  
-  export default Register;
+    )
+}
+
+export default Register

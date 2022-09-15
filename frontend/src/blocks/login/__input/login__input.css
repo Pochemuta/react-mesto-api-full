@@ -1,0 +1,24 @@
+.login__input {
+  margin: 30px 36px 0;
+  padding: 0;
+  padding-bottom: 13px;
+  min-width: 358px;
+  border: none;
+  border-bottom: 2px solid #cccccc;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 17px;
+  text-align: left;
+  box-sizing: border-box;
+  outline-width: 2px;
+  outline-color: rgb(3, 152, 252);
+  background-color: black;
+  color: white;
+}
+
+@media screen and (max-width: 490px) {
+  .login__input {
+    min-width: 260px;
+  }
+}
