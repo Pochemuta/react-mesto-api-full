@@ -1,20 +1,22 @@
 .auth__input {
-  font-family: Inter;
-  font-weight: normal;
-  font-size: 14px;
-  line-height: 17px;
-  outline: none;
-  border-bottom: 2px solid #CCCCCC;
-  width: 358px;
-  border-top: 0;
-  border-left: 0;
-  border-right: 0;
-  margin: 30px auto 0;
-  background-color: transparent;
-  padding-bottom: 13px;
-  color: #CCCCCC;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    margin-top: 60px;
+    border-bottom: 2px solid #CCCCCC;
+    box-sizing: content-box;
+    background-color: transparent;
+    width: 358px;
+    
+    font-family: 'Inter', Arial, sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 17px;
+    color: #ffffff;
+    
 }
 
-.auth__input:first-child{
-  margin-top: 54px;
+.login__input:last-child {
+    margin-top: 30px;
 }

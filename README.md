@@ -1,11 +1,4 @@
 # react-mesto-api-full
-Репозиторий для приложения проекта `Mesto`, включающий фронтенд и бэкенд части приложения со следующими возможностями: авторизации и регистрации пользователей, операции с карточками и пользователями.
+Ссылка на сайт:
 
-__mesto:__ https://bakirov.students.nomoredomains.work/
-
-__api:__ https://api.bakirov.students.nomoredomains.work/
-
-__ip:__ 51.250.67.247
-
-
-
+http://kurbangaliev1987.nomoredomains.work/

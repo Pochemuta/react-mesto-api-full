@@ -1,5 +1,5 @@
 class ErrorConflict extends Error {
-  constructor(message = 'Произошла ошибка') {
+  constructor(message = 'Произошел конфликт') {
     super(message);
     this.statusCode = 409;
   }
