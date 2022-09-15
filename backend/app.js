@@ -1,27 +1,28 @@
 require('dotenv').config();
 const express = require('express');
-
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const { errors } = require('celebrate');
-const cors = require('./middlewares/cors');
-const { requestLogger, errorLogger } = require('./middlewares/logger');
-const routes = require('./routes');
-const errorHandler = require('./utils/error-handler');
-const NotFound = require('./utils/not-found');
-const { login, postUser } = require('./controllers/users');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const { celebrate, errors, Joi } = require('celebrate');
 const auth = require('./middlewares/auth');
-const { signupValidity, loginValidity } = require('./middlewares/validation');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+const {
+  createUser,
+  login,
+} = require('./controllers/users');
+const NotFoundError = require('./errors/NotFound');
 
 const { PORT = 3000 } = process.env;
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/mestodb', () => {
-  console.log('подключение к базе данных прошло успешно');
-});
-
 app.use(bodyParser.json());
-app.use(cors);
+app.use(bodyParser.urlencoded({ extended: true }));
+
+mongoose.connect('mongodb://localhost:27017/mestodb');
+
+app.use(requestLogger);
+
+app.use(cors());
 
 app.get('/crash-test', () => {
   setTimeout(() => {
@@ -29,24 +30,41 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-app.use(requestLogger);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+    name: Joi.string().min(2).max(30),
+    avatar: Joi.string().pattern(/https*:\/\/(www.)?([A-Za-z0-9]{1}[A-Za-z0-9-]*\.?)*\.{1}[A-Za-z0-9-]{2,8}(\/([\w#!:.?+=&%@!\-/])*)?/),
+    about: Joi.string().min(2).max(60),
+  }),
+}), createUser);
 
-app.post('/signin', loginValidity, login);
-app.post('/signup', signupValidity, postUser);
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+  }),
+}), login);
 
-app.use(auth);
+app.use('/users', auth, require('./routes/users'));
 
-app.use(routes);
+app.use('/cards', auth, require('./routes/cards'));
 
-app.use((req, res, next) => {
-  next(new NotFound('Не найден маршрут'));
+app.use(auth, (req, res, next) => {
+  next(new NotFoundError('Некорректный запрос'));
 });
 
 app.use(errorLogger);
 
 app.use(errors());
-app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`серв запущен на ${PORT} порту`);
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  const message = statusCode === 500 ? 'На сервере произошла ошибка' : err.message;
+
+  res.status(statusCode).send({ message });
+  next();
 });
+
+app.listen(PORT);

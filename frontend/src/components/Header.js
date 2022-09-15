@@ -1,35 +1,31 @@
-import React from 'react';
-import { withRouter, useLocation, Link } from 'react-router-dom';
+import { Link, useLocation } from "react-router-dom";
 import logo from "../images/logo.svg";
 
-function Header(props) {
-    const { somePath } = useLocation()
-
-    const linkPath = `${ somePath === '/sign-up' ? '/sign-in' : '/sign-up'}`
-    const linkName = `${ somePath === '/sign-in' ? 'Войти' : 'Регистрация'}` 
-
-    function signOut() {
-        props.setIsLoggedIn(false)
-        localStorage.removeItem('token')
-        props.history.push('/sign-up')
-        // console.log('token')
-    }
-    
-    return(
-        <header className="header">
-            <img src={logo} className="header__logo" alt="Логотип"/>
-            <nav className='header__nav'>
-                {props.isLoggedIn ?
-                    <>
-                        <p className='header__nav header__mail'>{props.email}</p>
-                        <Link to='/sign-in' className='header__nav header__toggling-link' type='button' onClick={signOut}>Выйти</Link>
-                    </>
-                     : (<Link to={linkPath} className='header__nav header__toggling-link' type='button'>{linkName}</Link>)
-            }
-            </nav>
-        </header>
-    )
-    
+function Header({ loggedIn, onSignOut, currentEmail }) {
+  const location = useLocation();
+  return (
+    <header className="header">
+      <img className="header__logo" src={logo} alt="Логотип" />
+      <div className="header__container">
+        {loggedIn ? (
+          <>
+            <p className="header__email">{currentEmail}</p>
+            <button className="header__button" onClick={onSignOut}>
+              Выйти
+            </button>
+          </>
+        ) : location.pathname === "/sign-in" ? (
+          <Link className="header__link" to="/sign-up">
+            Регистрация
+          </Link>
+        ) : (
+          <Link className="header__link" to="/sign-in">
+            Войти
+          </Link>
+        )}
+      </div>
+    </header>
+  );
 }
 
-export default withRouter(Header)
+export default Header;

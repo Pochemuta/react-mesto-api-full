@@ -1,12 +1,10 @@
-.profile__container{
-  margin: 40px auto 0;
+.profile__container {
   display: flex;
+  align-items: center;
 }
 
-@media screen and (max-width: 760px) {
+@media (max-width: 767px) {
   .profile__container {
-    margin: 42px auto 0;
-    align-items: center;
     flex-direction: column;
   }
 }

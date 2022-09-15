@@ -1,5 +1,5 @@
 .popup__image {
-  width: 120px;
-  height: 120px;
-  margin: 60px auto 0;
+  max-width: 75vw;
+  max-height: 75vh;
+  margin-bottom: 10px;
 }
