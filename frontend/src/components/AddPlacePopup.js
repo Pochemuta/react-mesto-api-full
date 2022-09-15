@@ -1,46 +1,43 @@
-import React from "react";
-import PopupWithForm from "./PopupWithForm";
-import AddPlaceForm from "./forms/AddPlaceForm";
+import React from 'react';
+import PopupWithForm from './PopupWithForm';
 
-export default function AddPlacePopup({ isOpen, onClose, onAddPlace }) {
-  const [name, setName] = React.useState(" ");
-  const [src, setSrc] = React.useState(" ");
+export default function AddPlacePopup(props) {
 
-  function handleChangeName(e) {
-    setName(e.target.value);
-  }
+    const cardName = React.useRef();
+    const cardLink = React.useRef();
 
-  function handleChangeSrc(e) {
-    setSrc(e.target.value);
-  }
+    React.useEffect(() => {
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    onAddPlace({
-      name: name,
-      link: src,
-    });
-  }
+        cardName.current.value = '';
+        cardLink.current.value = '';
+    }, [props.isOpen]);
 
-  React.useEffect(() => {
-    setName(" ");
-    setSrc(" ");
-  }, [isOpen]);
+    function handleSubmit(e) {
+        e.preventDefault();
+        props.onAddPlace({
+            name: cardName.current.value,
+            link: cardLink.current.value,
+        });
+    }
 
-  return (
-    <PopupWithForm
-      name="add"
-      title="Новое место"
-      isOpen={isOpen}
-      onClose={onClose}
-      onSubmit={handleSubmit}
-    >
-      <AddPlaceForm
-        handleChangeName={handleChangeName}
-        handleChangeSrc={handleChangeSrc}
-        name={name}
-        src={src}
-      />
-    </PopupWithForm>
-  );
-}
+    return (
+        <PopupWithForm
+            name='add'
+            title='Новое место'
+            buttonText='Создать'
+            isOpen={props.isOpen}
+            onClose={props.onClose}
+            onSubmit={handleSubmit}
+            children={
+                <>
+                    <input className="popup__field popup__field-mesto" id="popup__field-mesto" name="name" type="text"
+                        placeholder="Название" required minLength="2" maxLength="30" ref={cardName} />
+                    <span id="popup__field-mesto-error" className="popup__error"></span>
+                    <input className="popup__field popup__field-link-mesto" id="popup__field-link-mesto" name="link" type="url"
+                        placeholder="Ссылка на картинку" required ref={cardLink} />
+                    <span id="popup__field-link-mesto-error" className="popup__error"></span>
+                </>
+            }
+        />
+    )
+};

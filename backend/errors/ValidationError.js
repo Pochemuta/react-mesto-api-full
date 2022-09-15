@@ -1,5 +1,5 @@
 class ValidationError extends Error {
-  constructor(message = 'Переданы некорректные данные') {
+  constructor(message) {
     super(message);
     this.statusCode = 400;
   }

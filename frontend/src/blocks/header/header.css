@@ -1,15 +1,11 @@
-.header {
+.header{
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  flex-direction: row;
-  min-width: calc(100% - 400px);
-  border-bottom: 1px solid rgba(33%, 33%, 33%, 0.7);
-  margin: 0 auto;
+  border-bottom: 1px solid rgba(84, 84, 84, 0.7);
 }
 
-@media (max-width: 320px) {
-  .header {
+@media screen and (max-width: 760px) {
+  .header{
     width: 100%;
   }
 }

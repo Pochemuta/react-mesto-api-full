@@ -1,5 +1,5 @@
 class Forbidden extends Error {
-  constructor(message = 'Нет прав') {
+  constructor(message) {
     super(message);
     this.statusCode = 403;
   }
