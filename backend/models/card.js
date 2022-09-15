@@ -1,19 +1,21 @@
 const mongoose = require('mongoose');
-const isUrl = require('validator/lib/isURL');
+const { regexLink } = require('../config/constants');
 
 const cardSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
     minlength: 2,
     maxlength: 30,
+    required: true,
   },
   link: {
     type: String,
     required: true,
     validate: {
-      validator: (v) => isUrl(v),
-      message: 'Неправильный формат ссылки',
+      validator(link) {
+        return regexLink.test(link);
+      },
+      message: 'Некорректная ссылка!',
     },
   },
   owner: {
@@ -28,7 +30,7 @@ const cardSchema = new mongoose.Schema({
   }],
   createdAt: {
     type: Date,
-    default: Date.now,
+    default: Date.now(),
   },
 });
 

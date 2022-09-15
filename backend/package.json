@@ -1,42 +1,48 @@
 {
-  "name": "express-mesto",
+  "name": "express-mesto-gha",
   "version": "1.0.0",
-  "description": "Бэкенд проекта Mesto",
+  "description": "node-express-mongoose",
   "main": "app.js",
   "scripts": {
-    "lint": "npx eslint .",
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/andrey-71/express-mesto.git"
+    "url": "git+https://github.com/Meder84/express-mesto-gha.git"
   },
-  "keywords": [],
-  "author": "Andrey G.",
+  "author": "Meder",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/andrey-71/express-mesto/issues"
+    "url": "https://github.com/Meder84/express-mesto-gha/issues"
   },
-  "homepage": "https://github.com/andrey-71/express-mesto#readme",
-  "devDependencies": {
-    "eslint": "^8.9.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.25.4",
-    "nodemon": "^2.0.15"
-  },
+  "homepage": "https://github.com/Meder84/express-mesto-gha#readme",
   "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "body-parser": "^1.19.1",
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.20.0",
     "celebrate": "^15.0.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
-    "dotenv": "^15.0.1",
-    "express": "^4.17.2",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "express-rate-limit": "^6.3.0",
     "express-winston": "^4.2.0",
+    "helmet": "^5.0.2",
+    "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.2.1",
+    "mongoose": "^6.2.10",
     "validator": "^13.7.0",
-    "winston": "^3.5.1"
-  }
+    "winston": "^3.7.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.10.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.4",
+    "jest": "^27.5.1",
+    "nodemon": "^2.0.15",
+    "supertest": "^6.2.2"
+  },
+  "keywords": []
 }

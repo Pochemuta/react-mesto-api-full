@@ -1,59 +1,45 @@
-class Auth {
-  constructor(serverUrl) {
-    this._serverUrl = serverUrl;
-  }
+// export const BASE_URL = 'https://auth.nomoreparties.co';
+export const BASE_URL = 'http://localhost:3001';
+// export const BASE_URL = 'https://api.asman.students.nomoredomains.work';
 
-  // Регистрация пользователя
-  register(data) {
-    return fetch(`${this._serverUrl}/signup`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        email: data.email,
-        password: data.password
-      })
-    })
-      .then(res => this._handleResult(res))
+const request = ({url, method = 'POST', token, body}) => {
+  const config = {
+    method: method,
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      ...!!token && {'Authorization': `Bearer ${token}`},
+    },
+    ...!!body && {body: JSON.stringify(body)},
+    // credentials: 'include',
   }
-
-  // Авторизация пользователя
-  authorize(data) {
-    return fetch(`${this._serverUrl}/signin`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        email: data.email,
-        password: data.password
-      })
-    })
-      .then(res => this._handleResult(res))
-  }
-
-  // Проверка корректности токена, получение email пользователя
-  checkLocalStorage(email) {
-    return fetch(`${this._serverUrl}/users/me`, {
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${email}`
-      }
-    })
-      .then(res => this._handleResult(res))
-  }
-
-  // Обработчик результата запроса
-  _handleResult(res) {
-    if (res.ok) {
-      return res.json();
+  return fetch(`${BASE_URL}${url}`, config)
+  .then((response) => {
+    if (response.ok) {
+      return response.json();
     }
-    return Promise.reject(`"${res.status} ${res.statusText}"`);
-  }
+    return Promise.reject(response.status);
+  })
 }
 
-const auth = new Auth('https://mesto-backend.andrey-g.nomoredomains.xyz');
-export default auth;
+export const register = (password, email) => {
+  return request({
+    url: '/signup',
+    body: {password, email},
+  })
+}
+
+export const authorize = (password, email) => {
+  return request({
+    url: '/signin',
+    body: {password, email},
+  })
+};
+
+export const getContent = (token) => {
+  return request({
+    url: '/users/me',
+    method: 'GET',
+    token,
+  })
+}

@@ -1,9 +1,9 @@
-import React from 'react';
+import React from "react";
 
 function Footer() {
   return (
-    <footer className='footer container__footer'>
-      <h2 className='footer__copyright'>&copy; 2021 Mesto Russia</h2>
+    <footer className="footer page__footer">
+      <p className="footer__copyright">&copy; {new Date().getFullYear()} Mesto Russia</p>
     </footer>
   )
 }

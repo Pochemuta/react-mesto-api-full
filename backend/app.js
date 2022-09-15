@@ -1,57 +1,52 @@
-const express = require('express');
 require('dotenv').config();
-const bodyParser = require('body-parser');
+const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
+const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const { errors } = require('celebrate');
-const routes = require('./routes');
-const { PORT, DB_ADDRESS } = require('./utils/config');
+const helmet = require('helmet');
+
+const cors = require('cors');
+const { NOT_FOUND } = require('./config/constants');
+const errorHandler = require('./middlewares/errorHandler');
 const { createUser, login } = require('./controllers/users');
+const { registerValid, loginValid } = require('./middlewares/validations');
 const auth = require('./middlewares/auth');
-const errorHandler = require('./middlewares/error-handler');
-const { signupValidation, signinValidation } = require('./middlewares/joi-validation');
+
+const { PORT = 3001 } = process.env;
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const app = express();
-// Подключение к БД
-mongoose.connect(DB_ADDRESS, {
-  useNewUrlParser: true,
-});
 
-// CORS
-const corsOptions = {
-  origin: [
-    'https://mesto-frontend.andrey-g.nomoredomains.xyz',
-    'http://mesto-frontend.andrey-g.nomoredomains.xyz',
-    'http://localhost:3001',
-  ],
-  credentials: true,
-};
-app.use(cors(corsOptions));
-
-// Сборка данных в JSON-формат
 app.use(bodyParser.json());
-// Парсер кук
-app.use(cookieParser());
-// Логгер запросов
-app.use(requestLogger);
+app.use(bodyParser.urlencoded({ extended: true }));
 
-// Роуты регистрации и авторизации (незащищенные)
-app.post('/signup', signupValidation, createUser);
-app.post('/signin', signinValidation, login);
-// Мидлвэр авторизации
-app.use(auth);
-// Остальные роуты (защищенные)
-app.use(routes);
-
-// Логгер ошибок
-app.use(errorLogger);
-// Обработчик ошибок celebrate
-app.use(errors());
-// Обработчик ошибок
-app.use(errorHandler);
-
-app.listen(PORT, () => {
-  console.log(`App started on port ${PORT}`);
+mongoose.connect('mongodb://localhost:27017/mestodb', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 });
+
+app.use(helmet());
+app.use(cookieParser());
+app.use(requestLogger); // Логгер запросов нужно подключить до всех обработчиков роутов:
+
+app.use(cors());
+app.get('/crash-test', () => { // Надо удалить этот код после успешного прохождения ревью.
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
+app.post('/signup', registerValid, createUser);
+app.post('/signin', loginValid, login);
+
+app.use(auth);
+
+app.use('/', require('./routes/cards'));
+app.use('/', require('./routes/users'));
+
+app.use('*', (req, res) => {
+  res.status(NOT_FOUND).send({ message: 'Страница не найдена!' });
+});
+
+app.use(errorLogger); // нужно подключить после обработчиков роутов и до обработчиков ошибок:
+app.use(errorHandler);
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

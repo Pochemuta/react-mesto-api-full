@@ -1,116 +1,101 @@
+import { BASE_URL } from './auth';
+
 class Api {
-  constructor(options) {
-    this._serverUrl = options.serverUrl;
-    this._headers = options.headers
+  constructor(config) {
+    this._url = config.baseUrl;
+    this._headers = config.headers;
+}
+
+  _errorHandler(res) {
+    if (res.ok) {
+      return res.json()
+    }
+    return Promise.reject(`Произошла ошибка: ${res.status}`)
   }
 
-  // Общий запрос всех данных с сервера
-  getAppInfo() {
-    return Promise.all([this._getUserInfo(), this._getInitialCards()]);
-  }
-
-  // Получение данных пользователя
-  _getUserInfo() {
-    return fetch(`${this._serverUrl}/users/me`, {
-      credentials: 'include',
-      headers: this._headers
+  getUser() {
+    return fetch( this._url + '/users/me', {
+      headers: this._getHeaders(),
     })
-      .then(res => this._handleResult(res));
+    .then(this._errorHandler);
   }
 
-  // Получение начальных карточек
-  _getInitialCards() {
-    return fetch(`${this._serverUrl}/cards`, {
-      credentials: 'include',
-      headers: this._headers
-    })
-      .then(res => this._handleResult(res));
-  }
-
-  // Отправка данных пользователя
-  setUserInfo(data) {
-    return fetch(`${this._serverUrl}/users/me`, {
+  setUser(data) {
+    return fetch( this._url + '/users/me', {
       method: 'PATCH',
-      credentials: 'include',
-      headers: this._headers,
+      headers: this._getHeaders(),
       body: JSON.stringify({
         name: data.name,
         about: data.about
       })
     })
-      .then(res => this._handleResult(res));
+    .then(this._errorHandler)
   }
 
-  // Отправка аватара пользователя
-  setUserAvatar(data) {
-    return fetch(`${this._serverUrl}/users/me/avatar`, {
-      method: 'PATCH',
-      credentials: 'include',
-      headers: this._headers,
-      body: JSON.stringify({
-        avatar: data.avatar
-      })
+  getCards() {
+    return fetch( this._url + '/cards', {
+      headers: this._getHeaders(),
     })
-      .then(res => this._handleResult(res));
+    .then(this._errorHandler);
   }
 
-  // Отправка новой карточки
-  setNewCard(data) {
-    return fetch(`${this._serverUrl}/cards`, {
+  addNewCard(data) {
+    return fetch( this._url + '/cards', {
       method: 'POST',
-      credentials: 'include',
-      headers: this._headers,
+      headers: this._getHeaders(),
       body: JSON.stringify({
         name: data.name,
         link: data.link
       })
     })
-      .then(res => this._handleResult(res));
+    .then(this._errorHandler);
   }
 
-  // Удаление карточки
-  deleteCard(data) {
-    return fetch(`${this._serverUrl}/cards/${data._id}`, {
+  deleteCard(id) {
+    return fetch( this._url + '/cards/' + id, {
       method: 'DELETE',
-      credentials: 'include',
-      headers: this._headers
+      headers: this._getHeaders()
     })
-      .then(res => this._handleResult(res));
+    .then(this._errorHandler);
   }
 
-  // Установка/снятие лайка
-  setLikeCard(card, isLiked) {
-    if (isLiked) {
-      return fetch(`${this._serverUrl}/cards/${card._id}/likes`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: this._headers
-      })
-        .then(res => this._handleResult(res));
-    } else {
-      return fetch(`${this._serverUrl}/cards/${card._id}/likes`, {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: this._headers
-      })
-        .then(res => this._handleResult(res));
-    }
+  changeLikeCardStatus(id, isLiked) {
+    return fetch( this._url + '/cards/' + id + '/likes', {
+      method: isLiked ? 'PUT' : 'DELETE',
+      headers: this._getHeaders()
+    })
+    .then(this._errorHandler);
   }
 
+  userAvatarUpdate(data) {
+    return fetch( this._url + '/users/me/avatar', {
+      method: 'PATCH',
+      headers: this._getHeaders(),
+      body: JSON.stringify({
+        avatar: data.avatar
+      })
+    })
+    .then(this._errorHandler)
+  }
+  getAllData() {
+    return Promise.all([this.getCards(), this.getUser()]);
+  }
 
-  // Обработчик результата запроса
-  _handleResult(res) {
-    if (res.ok) {
-      return res.json();
+  _getHeaders(){
+    const token = localStorage.getItem('jwt');
+    return {
+      ...this._headers,
+      'Authorization': `Bearer ${token}`,
     }
-    return Promise.reject(`"${res.status} ${res.statusText}"`);
   }
 }
 
 const api = new Api({
-  serverUrl: 'https://mesto-backend.andrey-g.nomoredomains.xyz',
+  // baseUrl: 'https://mesto.nomoreparties.co/v1/cohort-33/',
+  baseUrl: BASE_URL,
   headers: {
-    'Content-Type': 'application/json'
+    'Accept': 'application/json',
+    'Content-Type': 'application/json;charset=utf-8',
   }
 });
 

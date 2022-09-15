@@ -1,47 +1,85 @@
-import React from 'react';
-import {Link} from 'react-router-dom';
-import AuthForm from './AuthForm';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import Header from './Header';
 
+function Register (props) {
+  const [state, setState] = useState({
+    password: '',
+    email: '',
+  })
 
-function Register(props) {
+  function handleChange (e) {
+    const {name, value} = e.target;
+    setState(old => ({
+      ...old,
+      [name]: value,
+    }));
+  };
 
-  // Стейты инпутов
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-
-  // Обработчики изменения состояния инпутов
-  function handleChangeEmail(evt) {
-    setEmail(evt.target.value);
+  const formReset = () => {
+    setState({password: '', email: '',});
   }
 
-  function handleChangePassword(evt) {
-    setPassword(evt.target.value);
+  function handleSubmit (e) {
+    e.preventDefault();
+    const {password, email} = state;
+    if (!password || !email ) return;
+
+    props.handleRegister(password, email, formReset);
   }
 
-  // Обработчик формы
-  function handleSubmit(evt) {
-    evt.preventDefault();
-    props.onRegister({email, password});
-  }
+  return(
+    <>
+      <Header>
+        <Link to="/signin" className="header__link opacity">Войти</Link>
+      </Header>
+      <div className="sign">
+        <h3 className="sign__subtitle">
+          Регистрация
+        </h3>
+        <form
+          onSubmit={handleSubmit}
+          className="sign__form"
+        >
+          <label>
+            <input
+              className="sign__input"
+              id="email"
+              name="email"
+              type="email"
+              placeholder="Email"
+              value={state.email}
+              onChange={handleChange}
+            />
+          </label>
 
+          <label>
+            <input
+              className="sign__input"
+              id="password"
+              name="password"
+              type="password"
+              placeholder="Пароль"
+              value={state.password}
+              onChange={handleChange}
+            />
+          </label>
 
-  return (
-    <div className='auth auth_type_registr container__auth'>
-      <AuthForm
-        isForm={'registr'}
-        isEmail={email}
-        isPassword={password}
-        onEmail={handleChangeEmail}
-        onPassword={handleChangePassword}
-        onSubmit={handleSubmit}
-        textButton={'Зарегистрироваться'}
-      />
-      <div className='auth__sign-in'>
-        <p className='auth__registration-request-text'>Уже зарегистрированы?</p>
-        <Link to='/sign-in' className='auth__login-link'>Войти</Link>
+          <button
+            type="submit"
+            className="sign__button opacity"
+          >
+            Зарегистрироваться
+          </button>
+        </form>
+        <div className="sign__text-container">
+          <p className='sign__text'>Уже зарегистрированы? </p>
+          <Link to="/signin" className="sign__link opacity">&nbsp;Войти</Link>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
 export default Register;
+
