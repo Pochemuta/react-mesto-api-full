@@ -1,64 +1,44 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
-const bcrypt = require('bcryptjs');
-const UnauthorizedError = require('../errors/Unauthorized');
+const { isValidUrl } = require('../utils/methods');
 
 const userSchema = new mongoose.Schema({
   name: {
+    type: String, // имя — это строка
+    minlength: 2, // минимальная длина имени — 2 символа
+    maxlength: 30, // а максимальная — 30 символов
+    default: 'Жак-Ив Кусто', // присваивается стандартные значение
+  },
+  avatar: {
     type: String,
-    default: 'Жак-Ив Кусто',
+    required: false,
+    validate: {
+      validator: (avatar) => isValidUrl(avatar),
+      message: 'Ссылка некорректная',
+    },
+    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+  },
+  about: {
+    type: String,
+    required: false,
     minlength: 2,
     maxlength: 30,
+    default: 'Исследователь',
   },
   email: {
     type: String,
-    required: true,
-    unique: true,
+    required: true, // оно должно быть у каждого пользователя, так что имя — обязательное поле
+    unique: true, // уникальное значение
     validate: {
-      validator(v) {
-        return validator.isEmail(v);
-      },
-      message: 'Невалидный email',
+      validator: (email) => validator.isEmail(email),
+      message: 'Email введен некорректно',
     },
   },
   password: {
     type: String,
     required: true,
-    select: false,
-  },
-  about: {
-    type: String,
-    default: 'Исследователь',
-    minlength: 2,
-    maxlength: 30,
-  },
-  avatar: {
-    type: String,
-    validate: {
-      validator(v) {
-        return /https*:\/\/(www.)?([A-Za-z0-9]{1}[A-Za-z0-9-]*\.?)*\.{1}[A-Za-z0-9-]{2,8}(\/([\w#!:.?+=&%@!\-/])*)?/.test(v);
-      },
-      message: 'Невалидная ссылка на картинку',
-    },
-    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    select: false, // Так по умолчанию хеш пароля пользователя не будет возвращаться из базы
   },
 });
 
-userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password) {
-  return this.findOne({ email }).select('+password')
-    .then((user) => {
-      if (!user) {
-        return Promise.reject(new UnauthorizedError('Неправильные почта или пароль'));
-      }
-
-      return bcrypt.compare(password, user.password)
-        .then((matched) => {
-          if (!matched) {
-            return Promise.reject(new UnauthorizedError('Неправильные почта или пароль'));
-          }
-
-          return user;
-        });
-    });
-};
 module.exports = mongoose.model('user', userSchema);

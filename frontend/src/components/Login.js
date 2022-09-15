@@ -1,71 +1,65 @@
-import React from "react";
+import React, {useState} from 'react';
+import * as authApi from '../utils/authApi';
 
-function Login({ onLogin }) {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+function Login({onLogin}) {
 
-  function handleEmailChange(e) {
-    setEmail(e.target.value);
-  }
+  const [loginData, setLoginData] = useState({
+    email: '',
+    password: '',
+  });
 
-  function handlePasswordChange(e) {
-    setPassword(e.target.value);
-  }
+  const [message, setMessage] = useState('');
+
+  function handleChange(e) {
+    const {name, value} = e.target;
+    setLoginData({
+      ...loginData,
+      [name]: value,
+    });
+  };
 
   function handleSubmit(e) {
     e.preventDefault();
-    onLogin({
-      email,
-      password,
-    });
+    if (!loginData.email || !loginData.password) {
+      return;
+    }
+
+    onLogin(loginData);
   }
 
   return (
-    <div className="form__container">
-      <h2 className="form__title">Вход</h2>
-      <form className="popup__form" onSubmit={handleSubmit}>
+    <section className="register" >
+      <form className="form-user" onSubmit={handleSubmit}>
+        <label className="form-user__title">Вход</label>
         <input
-          className="popup__input  popup__input_theme_dark"
-          name="name"
-          type="email"
-          id="name"
-          placeholder="Email"
-          required
-          minLength="2"
-          maxLength="50"
-          autoComplete="off"
-          onChange={handleEmailChange}
-          value={email || ""}
-        />
-        <span
-          id="name-error"
-          className="popup__error popup__error_field_name"
-        ></span>
+        required
+        name="email"
+        id="user-email"
+        placeholder="Email"
+        type="email"
+        minLength="2"
+        maxLength="30"
+        className="form-user__input"
+        onChange={handleChange}
+        value={loginData.email}/>
+        <span>{message}</span>
         <input
-          className="popup__input popup__input_theme_dark"
-          name="text"
-          type="password"
-          id="text"
-          placeholder="Пароль"
-          required
-          minLength="2"
-          maxLength="50"
-          autoComplete="off"
-          onChange={handlePasswordChange}
-          value={password || ""}
+        required
+        name="password"
+        id="user-password"
+        placeholder="Пароль"
+        type="password"
+        minLength="2"
+        maxLength="30"
+        className="form-user__input"
+        onChange={handleChange}
+        value={loginData.password}
         />
-        <span
-          id="text-error"
-          className="popup__error popup__error_field_text"
-        ></span>
-        <button
-          className="popup__submit-button popup__submit-button_theme_dark"
-          type="submit"
-        >
-          Войти
-        </button>
+        <span>{message}</span>
+        <button className="register__button" type="submit">Войти</button>
       </form>
-    </div>
+
+    </section>
   );
 }
 

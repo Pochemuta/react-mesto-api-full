@@ -1,15 +1,15 @@
 .profile {
-  color:white;
-  font-family: 'Inter', Arial, sans-serif;
   display: flex;
-  justify-content: space-between;
-  padding: 40px 0 51px;
+  flex-direction: column;
   align-items: center;
+  color: #fff;
+  width: 100%;
+  position: relative;
 }
 
-@media (max-width: 767px) {
+@media (min-width: 620px) {
   .profile {
-    flex-direction: column;
-    padding-bottom: 36px;
+    flex-direction: row;
+    justify-content: space-between;
   }
 }

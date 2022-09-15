@@ -1,24 +1,27 @@
-const { NODE_ENV, JWT_SECRET } = process.env;
 const jwt = require('jsonwebtoken');
-const UnauthorizedError = require('../errors/Unauthorized');
+const UnauthorizedError = require('../errors/unauthorized-error'); // 401
+const { JWT_SECRET } = require('../config');
 
+// eslint-disable-next-line consistent-return
 module.exports = (req, res, next) => {
+  // достаём авторизационный заголовок
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    return next(new UnauthorizedError('Необходима авторизация'));
+    next(new UnauthorizedError('Необходима авторизация'));
   }
 
   const token = authorization.replace('Bearer ', '');
   let payload;
 
   try {
-    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'super-secret-key');
+    // попытаемся верифицировать токен
+    payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
-    return next(new UnauthorizedError('Некорректный токен'));
+    // отправим ошибку, если не получилось
+    next(new UnauthorizedError('Необходима авторизация'));
   }
 
-  req.user = payload;
-
-  return next();
+  req.user = payload; // записываем пейлоуд в объект запроса
+  next(); // пропускаем запрос дальше
 };

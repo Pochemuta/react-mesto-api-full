@@ -1,70 +1,41 @@
-require('dotenv').config();
 const express = require('express');
+
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 const cors = require('cors');
-const { celebrate, errors, Joi } = require('celebrate');
-const auth = require('./middlewares/auth');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const {
-  createUser,
-  login,
-} = require('./controllers/users');
-const NotFoundError = require('./errors/NotFound');
+const router = require('./routes/index');
+const { PORT } = require('./config');
+const { corsOptions } = require('./utils/constants');
 
-const { PORT = 3000 } = process.env;
 const app = express();
+const handlerErrors = require('./middlewares/errors');
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+mongoose.connect('mongodb://localhost:27017/mestodb', {
+  useNewUrlParser: true,
+});
 
-mongoose.connect('mongodb://localhost:27017/mestodb');
+app.use('*', cors(corsOptions));
+app.use(bodyParser.json()); // для собирания JSON-формата
+app.use(cookieParser()); // подключаем парсер кук как мидлвэр
+app.use(requestLogger); // подключаем логгер запросов
 
-app.use(requestLogger);
-
-app.use(cors());
-
+// для проверки crash-test
 app.get('/crash-test', () => {
   setTimeout(() => {
     throw new Error('Сервер сейчас упадёт');
   }, 0);
 });
 
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-    name: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(/https*:\/\/(www.)?([A-Za-z0-9]{1}[A-Za-z0-9-]*\.?)*\.{1}[A-Za-z0-9-]{2,8}(\/([\w#!:.?+=&%@!\-/])*)?/),
-    about: Joi.string().min(2).max(60),
-  }),
-}), createUser);
+app.use('/', router);
 
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-  }),
-}), login);
-
-app.use('/users', auth, require('./routes/users'));
-
-app.use('/cards', auth, require('./routes/cards'));
-
-app.use(auth, (req, res, next) => {
-  next(new NotFoundError('Некорректный запрос'));
-});
-
-app.use(errorLogger);
-
+app.use(errorLogger); // подключаем логгер ошибок
 app.use(errors());
+app.use(handlerErrors);
 
-app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  const message = statusCode === 500 ? 'На сервере произошла ошибка' : err.message;
-
-  res.status(statusCode).send({ message });
-  next();
+app.listen(PORT, () => {
+  // Если всё работает, консоль покажет, какой порт приложение слушает
+  console.log(`App listening on port ${PORT}`);
 });
-
-app.listen(PORT);

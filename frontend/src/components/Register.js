@@ -1,81 +1,69 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from 'react';
+// import { withRouter } from 'react-router-dom';
+// import * as authApi from '../utils/authApi';
 
-function Register({ onRegister }) {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+function Register({onRegister}) {
 
-  function handleEmailChange(e) {
-    setEmail(e.target.value);
-  }
+  const[registerData, setRegisterData] = useState({
+    email: '',
+    password: '',
+  });
 
-  function handlePasswordChange(e) {
-    setPassword(e.target.value);
-  }
+  const [message, setMessage] = useState('');
 
-  function handleSubmit(e) {
-    e.preventDefault();
-
-    onRegister({
-      email,
-      password,
+  const handleChange = (e) => {
+    setMessage('');
+    const { name, value } = e.target;
+    setRegisterData({
+      ...registerData,
+      [name]: value,
     });
-  }
+  };
 
-  React.useEffect(() => {
-    setEmail("");
-    setPassword("");
-  }, []);
+  const handleSubmit = (e) => {
+
+    e.preventDefault();
+    // authApi.register(email, password)
+    //   .then((res) => {
+    //     history.push('/sign-up')
+    //   })
+    onRegister(registerData).catch((err) => setMessage(err.message || 'Что-то пошло не так'));
+  }
 
   return (
-    <div className="form__container">
-      <h2 className="form__title">Регистрация</h2>
-      <form className="popup__form" onSubmit={handleSubmit}>
+    <section className="register" >
+      <form className="form-user" onSubmit={handleSubmit}>
+        <label className="form-user__title">Регистрация</label>
         <input
-          className="popup__input  popup__input_theme_dark"
-          name="name"
-          type="email"
-          id="name"
-          placeholder="Email"
-          required
-          minLength="2"
-          maxLength="50"
-          autoComplete="off"
-          onChange={handleEmailChange}
-          value={email || ""}
-        />
-        <span
-          id="name-error"
-          className="popup__error popup__error_field_name"
-        ></span>
+        required
+        name="email"
+        id="user-email"
+        placeholder="Email"
+        type="email"
+        minLength="2"
+        maxLength="30"
+        className="form-user__input"
+        value={registerData.email}
+        onChange={handleChange}/>
+        
+        <span>{message}</span>
         <input
-          className="popup__input popup__input_theme_dark"
-          name="text"
-          type="password"
-          id="text"
-          placeholder="Пароль"
-          required
-          minLength="2"
-          maxLength="50"
-          autoComplete="off"
-          onChange={handlePasswordChange}
-          value={password || ""}
-        />
-        <span
-          id="text-error"
-          className="popup__error popup__error_field_text"
-        ></span>
-        <button
-          className="popup__submit-button popup__submit-button_theme_dark"
-          type="submit"
-        >
-          Зарегистрироваться
-        </button>
+        required
+        name="password"
+        id="user-password"
+        placeholder="Пароль"
+        type="password"
+        minLength="2"
+        maxLength="30"
+        className="form-user__input"
+        value={registerData.password}
+        onChange={handleChange}/>
+        <span>{message}</span>
+        <button className="register__button" type="submit">Зарегистрироваться</button>
+        <p className="register__сaption"> Уже зарегистрированы? <a href="/sign-in" className="register__alredy">Войти</a>
+        </p>
       </form>
-      <Link to="/sign-in" className="form__link">
-        Уже зарегистрированы? Войти
-      </Link>
-    </div>
+    </section>
   );
 }
 

@@ -1,13 +1,15 @@
 .header {
+  border-bottom: solid 1px rgba(84,84,84,0.7);
+  width: 100%;
+  max-width: 880px;
+  padding-bottom: 28px;
   display: flex;
-  padding: 45px 0 41px;
-  box-sizing: border-box;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(84, 84, 84, 0.7);
+
 }
 
-@media (max-width: 767px) {
+@media (min-width: 620px) {
   .header {
-    padding: 28px 0 32px;
+    padding-bottom: 35px;
   }
 }
