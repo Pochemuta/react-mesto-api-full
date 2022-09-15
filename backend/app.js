@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 
 const cors = require('cors');
+const { errors } = require('celebrate');
 const { NOT_FOUND } = require('./config/constants');
 const errorHandler = require('./middlewares/errorHandler');
 const { createUser, login } = require('./controllers/users');
@@ -48,5 +49,6 @@ app.use('*', (req, res) => {
 });
 
 app.use(errorLogger); // нужно подключить после обработчиков роутов и до обработчиков ошибок:
+app.use(errors());
 app.use(errorHandler);
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
