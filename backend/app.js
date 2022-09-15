@@ -12,6 +12,7 @@ const {
 } = require('celebrate');
 const cors = require('cors');
 const { default: isURL } = require('validator/lib/isURL');
+const { errors } = require('celebrate');
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
 const { createUser, login } = require('./controllers/users');
@@ -63,25 +64,21 @@ app.use('/', auth, userRouter);
 app.use('/', auth, cardRouter);
 
 app.use(errorLogger);
-
+app.use(errors());
 app.use((req, res, next) => {
   next(new NotFoundError('NotFound404'));
 });
 
 app.use((err, req, res, next) => {
+  console.log(err);
   console.log(err.stack || err);
   const { statusCode = 500, message } = err;
 
-  if (isCelebrateError(err)) {
-    const [error] = err.details.values();
-    return res.status(400).send({ message: error.message });
-  }
-  res
+  return res
     .status(statusCode)
     .send({
       message: statusCode === 500 ? 'На сервере произошла ошибка' : message,
     });
-  return next();
 });
 
 app.listen(PORT, () => {
