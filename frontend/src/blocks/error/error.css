@@ -1,20 +1,20 @@
 .error {
-  color:#FF0000;
-  font-size: 12px;
-  line-height: 15px;
-  display: block;
-  margin-bottom: 13px;
-  font-weight: 400;
-  max-width: 238px;
-  min-height: 30px;
+    color: red;
+    opacity: 1;
+    position: absolute;
+    top: 145px;
+    left: 36px;
+    transition: 0.3s;
+    font-family: Inter, Arial, sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 12px;
 }
 
-.error:last-of-type {
-  margin-bottom: 18px;
-}
-
-@media (min-width: 620px) {
-  .error {
-    max-width: 358px;
-  }
+@media screen and (max-width: 615px) {
+    .error {
+        top: 151px;
+        left: 22px;
+    }
 }

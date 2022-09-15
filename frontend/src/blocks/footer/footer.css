@@ -1,14 +1,16 @@
 .footer {
-  margin-bottom: 60px;
-  display: flex;
-  width: 100%;
-  z-index: 1;
-  flex-grow: 0;
+    max-width: 880px;
+    margin: 0 auto 60px;
 }
 
-@media screen and (max-width: 490px) {
-  .footer {
-    margin: 0 auto 30px;
-    max-width: 282px;
-  }
+@media screen and (max-width: 899px) {
+    .footer {
+        margin-bottom: 30px;
+    }
+}
+
+@media screen and (max-width: 615px) {
+    .footer {
+        margin-bottom: 36px;
+    }
 }

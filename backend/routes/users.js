@@ -1,36 +1,23 @@
-const userRouter = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
-const { getUserId, getUsers, updateUser, updateUserAvatar, getUserAuth } = require('../controllers/users');
+const router = require('express').Router();
+const auth = require('../middlewares/auth');
+const {
+  userAvatarValid,
+  parameterIdValid,
+  userValid,
+} = require('../middlewares/validationJoi');
 
-userRouter.get('/users', getUsers);
-userRouter.get('/users/me', getUserAuth);
-userRouter.get(
-  '/users/:userId',
-  celebrate({
-    params: Joi.object().keys({
-      userId: Joi.string().length(24).hex().required(),
-    }),
-  }),
+const {
+  getUser,
   getUserId,
-);
-userRouter.patch(
-  '/users/me',
-  celebrate({
-    body: Joi.object().keys({
-      name: Joi.string().required().min(2).max(30),
-      about: Joi.string().required().min(2).max(30),
-    }),
-  }),
-  updateUser,
-);
-userRouter.patch(
-  '/users/me/avatar',
-  celebrate({
-    body: Joi.object().keys({
-      avatar: Joi.string().required().pattern(/(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+\.[a-z0-9_-]{2,3}))(:\d{2,5})?((\/.+)+)?\/?#?/m),
-    }),
-  }),
-  updateUserAvatar,
-);
+  updateUserInfo,
+  updateAvatar,
+  getUserMe,
+} = require('../controllers/users');
 
-module.exports = userRouter;
+router.get('/', auth, getUser);
+router.get('/me', auth, getUserMe);
+router.get('/:userId', auth, parameterIdValid('userId'), getUserId);
+router.patch('/me', auth, userValid, updateUserInfo);
+router.patch('/me/avatar', userAvatarValid, updateAvatar);
+
+module.exports = router;

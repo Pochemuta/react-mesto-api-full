@@ -1,28 +1,19 @@
-import React from "react";
-import sucess from "../images/Union.svg"
-import denied from "../images/Denied.svg"
+import React from 'react';
 
-function InfoTooltip({ isOpen, onClose, isSignupSucced }) {
+function InfoTooltip(props) {
     return (
-        <div className={`popup ${isOpen && 'popup_opened'}`}>
-            <div className="popup__container">
-                <button className="popup__container-exit-button" type="button" onClick={onClose}></button>
-                <div className="popup__container-editor">
-                    {!isSignupSucced ?
-                        (<>
-                            <img src={denied} alt="Отказ" className="popup__tooltip-image"></img>
-                            <p className="popup__tooltip-text">Что-то пошло не так! Попробуйте ещё раз.</p>
-                        </>)
-                        :
-                        (<>
-                            <img src={sucess} alt="Успех" className="popup__tooltip-image"></img>
-                            <p className="popup__tooltip-text">Вы успешно зарегистрировались!</p>
-                        </>)
-                    }
+        <>
+            <div className={`popup popup_infotooltip popup_transition ${props.isOpen ? 'popup_opened' : ''}`} onClick={props.onClose}>
+                <div className="popup__container" onClick={(evt) => evt.stopPropagation()}>
+                    <button className="popup__close-btn popup__close-btn-add" type="button" onClick={props.onClose}></button>
+                    <div className="infotooltip__content">
+                        <img className="infotooltip__image" src={props.union.union} alt="good" />
+                        <p className="infotooltip__text">{props.union.text}</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    )
+        </>
+    );
 }
 
-export default InfoTooltip
+export default InfoTooltip;

@@ -1,101 +1,104 @@
-export class Api {
-  constructor({ headers, baseUrl }) {
-    this._headers = headers;
-    this._baseUrl = baseUrl;
-  }
-
-  getInitialCards() {
-    const requestUrl = this._baseUrl + '/cards';
-    return fetch(requestUrl, {
-      headers: this._headers,
-      credentials: 'include',
-    }).then(this._checkResponse);
-  }
-
-  getUserInfo() {
-    const requestUrl = this._baseUrl + '/users/me';
-    return fetch(requestUrl, {
-      headers: this._headers,
-      credentials: 'include',
-    }).then(this._checkResponse);
-  }
-
-  getPageNeedData() {
-    return Promise.all([this.getInitialCards(), this.getUserInfo()]);
-  }
-
-  updateUserInfo(body) {
-    const requestUrl = this._baseUrl + '/users/me';
-    return fetch(requestUrl, {
-      headers: this._headers,
-      method: 'PATCH',
-      credentials: 'include',
-      body: JSON.stringify(body),
-    }).then(this._checkResponse);
-  }
-
-  addNewCard(body) {
-    const requestUrl = this._baseUrl + '/cards';
-    return fetch(requestUrl, {
-      headers: this._headers,
-      method: 'POST',
-      credentials: 'include',
-      body: JSON.stringify(body),
-    }).then(this._checkResponse);
-  }
-
-  removeCard(cardId) {
-    const requestUrl = this._baseUrl + `/cards/${cardId}`;
-    return fetch(requestUrl, {
-      headers: this._headers,
-      method: 'DELETE',
-      credentials: 'include',
-    }).then(this._checkResponse);
-  }
-
-  addLike(cardId) {
-    const requestUrl = this._baseUrl + `/cards/${cardId}/likes`;
-    return fetch(requestUrl, {
-      headers: this._headers,
-      method: 'PUT',
-      credentials: 'include',
-    }).then(this._checkResponse);
-  }
-
-  removeLike(cardId) {
-    const requestUrl = this._baseUrl + `/cards/${cardId}/likes`;
-    return fetch(requestUrl, {
-      headers: this._headers,
-      method: 'DELETE',
-      credentials: 'include',
-    }).then(this._checkResponse);
-  }
-
-  changeProfileAvatar(body) {
-    const requestUrl = this._baseUrl + `/users/me/avatar`;
-    return fetch(requestUrl, {
-      headers: this._headers,
-      method: 'PATCH',
-      credentials: 'include',
-      body: JSON.stringify(body),
-    }).then(this._checkResponse);
-  }
-
-  _checkResponse(res) {
-    if (res.ok) {
-      return res.json();
-    } else {
-      return Promise.reject(`${res.status} ${res.statusText}`);
+class Api {
+  constructor({ address }) {
+    this.address = address
     }
+
+    _getResponseData(res) {
+      return res.ok ? res.json() : Promise.reject(new Error(`Ошибка: ${res.status}`));
+    }
+
+    getInitialCards() {
+        return fetch(`${this.address}/cards`, {
+          headers: {
+            authorization: this.getToken(),
+          },
+        })
+            .then(this._getResponseData);
+    }
+
+    getAboutUser() {
+        return fetch(`${this.address}/users/me`, {
+          headers: {
+            authorization: this.getToken(),
+          },
+        })
+            .then(this._getResponseData)
+    }
+
+    editProfile(data) {
+        return fetch(`${this.address}/users/me`, {
+            method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            authorization: this.getToken(),
+          },
+            body: JSON.stringify({
+                name: data.name,
+                about: data.about
+            })
+        })
+            .then(this._getResponseData)
+    }
+
+    addCard(data) {
+        return fetch(`${this.address}/cards`, {
+            method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            authorization: this.getToken(),
+          },
+            body: JSON.stringify({
+                name: data.name,
+                link: data.link
+            })
+        })
+            .then(this._getResponseData)
+    }
+
+    deleteCard(dataId) {
+        return fetch(`${this.address}/cards/${dataId}`, {
+            method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            authorization: this.getToken(),
+          },
+        })
+            .then(this._getResponseData)
+    }
+
+    changeLikeCardStatus(dataId, isLiked) {
+        const method = isLiked ? 'DELETE' : 'PUT';
+        return fetch(`${this.address}/cards/${dataId}/likes`, {
+            method,
+          headers: {
+            'Content-Type': 'application/json',
+            authorization: this.getToken(),
+          },
+        })
+            .then(this._getResponseData)
+    }
+
+    updateAvatar(data) {
+        return fetch(`${this.address}/users/me/avatar`, {
+            method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            authorization: this.getToken(),
+          },
+            body: JSON.stringify({
+                avatar: data.avatar
+            })
+        })
+          .then(this._getResponseData)
+    }
+
+  getToken() {
+    return `Bearer ${localStorage.getItem('token')}`
   }
 }
 
 const api = new Api({
-  baseUrl: 'https://api.mestofront.nem.nomoredomains.work',
-  headers: {
-    authorization: 'ae466f98-7ffc-4435-a80d-300e1427093a',
-    'Content-Type': 'application/json',
-  },
+  address: 'https://api.arahalevich.nomoredomains.work',
 });
 
 export default api;

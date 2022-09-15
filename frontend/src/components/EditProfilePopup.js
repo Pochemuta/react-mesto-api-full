@@ -1,64 +1,121 @@
-import React from "react"
-import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import React, { useState, useContext, useEffect } from "react";
 import PopupWithForm from "./PopupWithForm";
+import { CurrentUserContext } from "../context/CurrentUserContext";
 
-function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
+function EditProfilePopup(props) {
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [nameError, setNameError] = useState('Введите своё имя');
+    const [jobError, setJobError] = useState('Введите свою проффессию');
+    const [nameDirty, setNameDirty] = useState(false);
+    const [jobDirty, setJobDirty] = useState(false);
+    const [formValid, setFormValid] = useState(false);
 
-    const [name, setName] = React.useState('');
-    const [description, setDescription] = React.useState('');
+    const currentUser = useContext(CurrentUserContext);
+
+    useEffect(() => {
+        setName(currentUser.name);
+        setDescription(currentUser.about);
+        if (props.isOpen) {
+            setFormValid(true);
+        }
+    }, [currentUser, props.isOpen]);
+
+    useEffect(() => {
+        if (nameError || jobError) {
+            setFormValid(false);
+        } else {
+            setFormValid(true);
+        }
+    }, [nameError, jobError])
 
     function handleChangeName(e) {
-        setName(e.target.value)
+        setName(e.target.value);
+        if (!e.target.validity.valid && e.target.value.length < 2 || e.target.value.length > 30) {
+            setNameError('Введите имя профиля. Имя должно быть длинее 2 и меньше 30');
+            if (!e.target.value) {
+                setNameError('Имя профиля не должно быть пустым');
+            }
+        } else {
+            setNameError('');
+        }
     }
 
     function handleChangeDescription(e) {
-        setDescription(e.target.value)
+        setDescription(e.target.value);
+        if (!e.target.validity.valid && e.target.value.length < 2 || e.target.value.length > 30) {
+            setJobError('Введите профессию профиля. Название профессии должно быть длинее 2 и меньше 30');
+            if (!e.target.value) {
+                setJobError('Название профессии не должно быть пустым');
+            }
+        } else {
+            setJobError('');
+        }
     }
 
-    const currentUser = React.useContext(CurrentUserContext);
+    function blurHandler(e) {
+        switch (e.target.name) {
+            case 'nametype':
+                setNameDirty(true);
+                break;
+            case 'job':
+                setJobDirty(true);
+                break;
+        }
+    }
 
-    React.useEffect(() => {
-        setName(currentUser.name);
-        setDescription(currentUser.about);
-    }, [currentUser, isOpen]);
-
-    function handleSubmit(e) {
-        e.preventDefault();
-        onUpdateUser({
-            name: name,
+    function handleSubmit() {
+        // Передаём значения управляемых компонентов во внешний обработчик
+        props.onUpdateUser({
+          name: name,
             about: description,
         });
+        props.onClose();
     }
 
     return (
-        <PopupWithForm id="profile-popup" title="Редактировать профиль" formId="editProfileForm" isOpen={isOpen} onClose={onClose} onSubmit={handleSubmit}>
-            <fieldset className="popup__form-settings">
+        <PopupWithForm
+            title='Редактировать профиль'
+            name='edit'
+            isOpen={props.isOpen}
+            onClose={props.onClose}
+            btnText='Сохранить'
+            save='Сохранение...'
+            onSubmitForm={handleSubmit}
+            formValid={formValid}
+        >
+            <div className="form__column">
                 <input
-                    name="name"
-                    id="name-input"
+                    className="form__input form__input_type_name"
+                    id="name"
                     type="text"
-                    className="popup__input popup__input_type_name"
-                    required
+                    name="nametype"
+                    placeholder="Введите ваше имя"
                     minLength="2"
                     maxLength="40"
+                    value={name || ''}
                     onChange={handleChangeName}
-                    value={name || ""} />
-                <span className="name-input-error"></span>
-                <input
-                    name="about"
-                    id="description-input"
-                    type="text"
-                    className="popup__input popup__input_type_description"
+                    onBlur={blurHandler}
                     required
+                />
+                {(nameDirty && nameError) && <div className="error">{nameError}</div>}
+                <input
+                    className="form__input form__input_type_job"
+                    type="text"
+                    id="job"
+                    name="job"
+                    placeholder="Введите вашу профессию"
                     minLength="2"
                     maxLength="200"
+                    value={description || ''}
                     onChange={handleChangeDescription}
-                    value={description || ""} />
-                <span className="description-input-error"></span>
-                <button className="popup__button" type="submit">Сохранить</button>
-            </fieldset>
+                    onBlur={blurHandler}
+                    required
+                />
+                {(jobDirty && jobError) && <div className="error error_below">{jobError}</div>}
+            </div>
         </PopupWithForm>
-    )
+    );
 }
 
-export default EditProfilePopup
+export default EditProfilePopup;

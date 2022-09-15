@@ -1,49 +1,50 @@
-const express = require('express');
-const { celebrate, errors } = require('celebrate');
-const mongoose = require('mongoose');
 require('dotenv').config();
-const cors = require('cors');
-const { userRouter } = require('./routes/user');
-const { cardRouter } = require('./routes/card');
-const { login } = require('./controllers/login');
-const { createUser } = require('./controllers/createUser');
-const { auth } = require('./middlewares/auth');
-const { errorHandler } = require('./middlewares/errorHandler');
-const NotFoundError = require('./errors/NotFoundError');
-const { joiSignInScheme, joiSignUpScheme } = require('./utils/validator');
-const { requestLogger, errorLogger } = require('./middlewares/logger');
+const express = require('express');
 
+const cors = require('cors');
+const { errors } = require('celebrate');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const routerErrorWay = require('./routes/errorsway');
+const { createUser, login } = require('./controllers/users');
+const auth = require('./middlewares/auth');
+const errorHandler = require('./middlewares/errorHandler');
+const { registerValid, loginValid } = require('./middlewares/validationJoi');
+const { requestLogger, errorLoger } = require('./middlewares/logger');
+
+// Слушаем 3000 порт
 const { PORT = 3000 } = process.env;
 
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/mestodb ', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
+app.use(requestLogger);
 app.use(cors());
 
-app.use(requestLogger);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.get('/crash-test', () => {
   setTimeout(() => {
     throw new Error('Сервер сейчас упадёт');
   }, 0);
 });
-app.post('/signin', express.json(), celebrate(joiSignInScheme), login);
-app.post('/signup', express.json(), celebrate(joiSignUpScheme), createUser);
-app.use('/users', auth, userRouter);
-app.use('/cards', auth, cardRouter);
 
-app.use(errorLogger);
+app.post('/signup', registerValid, createUser);
+app.post('/signin', loginValid, login);
 
-app.use('*', (req, res, next) => {
-  next(new NotFoundError('Такой страницы не существует'));
-});
+// подключаемся к серверу mongo
+mongoose.connect('mongodb://localhost:27017/mestodb', { useNewUrlParser: true });
+
+app.use('/cards', require('./routes/cards'));
+
+app.use(auth);
+
+app.use(routerErrorWay);
+
+app.use(errorLoger);
+
 app.use(errors());
+
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`App listening on port ${PORT}`);
-});
+app.listen(PORT);

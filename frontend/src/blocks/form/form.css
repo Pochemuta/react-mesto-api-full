@@ -1,6 +1,10 @@
 .form {
-  display: grid;
-  gap: 216px 0;
-  grid-template-rows: auto;
-  max-height: 360px;
+    box-sizing: border-box;
+    padding: 34px 36px 37px;
+}
+
+@media screen and (max-width: 615px) {
+    .form {
+        padding: 25px 22px;
+    }
 }

@@ -1,40 +1,42 @@
-export const BASE_URL = 'https://api.dan2491.nomoredomains.work';
+export const BASE_URL = 'https://api.arahalevich.nomoredomains.work';
 
-const checkRes = (res) => {
-    return res.ok ? res.json() : Promise.reject(`Что-то пошло не так: ${res}`);
+const HEADERS = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+}
+
+const getJson = (response) => {
+    if (response.ok) {
+        return response.json();
+    }
+    throw new Error({ status: response.status });
 }
 
 export const register = (email, password) => {
     return fetch(`${BASE_URL}/signup`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        headers: HEADERS,
         body: JSON.stringify({ email, password })
     })
-        .then(checkRes)
-}
+        .then(getJson)
+};
 
-export const authorize = (email, password) => {
+export const authorization = (email, password) => {
     return fetch(`${BASE_URL}/signin`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        headers: HEADERS,
         body: JSON.stringify({ email, password })
     })
-        .then(checkRes)
-}
+        .then(getJson)
+};
 
-
-export const getContent = (token) => {
+export const examinationValidationToken = (token) => {
     return fetch(`${BASE_URL}/users/me`, {
         method: 'GET',
         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            ...HEADERS,
+            'Authorization': `Bearer ${token}`
         }
     })
-        .then(checkRes)
-} 
+        .then(getJson)
+}
