@@ -1,16 +1,16 @@
-const corsOptions = {
-  origin: [
-    'https://mestokate.nomoredomains.work',
-    'http://mestokate.nomoredomains.work',
-    'http://localhost:3000',
-  ],
-  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
-  allowedHeaders: ['Content-Type', 'origin', 'Authorization'],
-  credentials: true,
-};
-
+const DEFAULT_ERR_CODE = 500;
+const INCORRECT_DATA_ERR_CODE = 400;
+const NOT_FOUND_ERR_CODE = 404;
+const UNAUTHORIZED_ERR_CODE = 401;
+const FORBIDDEN_ERR_CODE = 403;
+const CONFLICT_ERR_CODE = 409;
+const PORT = 3000;
 module.exports = {
-  corsOptions,
+  DEFAULT_ERR_CODE,
+  INCORRECT_DATA_ERR_CODE,
+  NOT_FOUND_ERR_CODE,
+  PORT,
+  FORBIDDEN_ERR_CODE,
+  UNAUTHORIZED_ERR_CODE,
+  CONFLICT_ERR_CODE,
 };

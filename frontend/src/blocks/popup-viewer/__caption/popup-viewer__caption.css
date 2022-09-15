@@ -1,0 +1,7 @@
+.popup-viewer__caption {
+  margin: 10px 0 0 0;
+  max-width: 291px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

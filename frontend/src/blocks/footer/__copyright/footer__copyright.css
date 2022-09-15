@@ -1,14 +1,14 @@
 .footer__copyright {
   color: #545454;
-  font-size: 14px;
-  line-height: 17px;
+  font-size: 18px;
   font-weight: 400;
+  line-height: 21.78px;
   margin: 0;
 }
 
-@media (min-width: 620px) {
+@media screen and (max-width: 372px) {
   .footer__copyright {
-    font-size: 18px;
-    line-height: 22px;
+    font-size: 14px;
+    line-height: 16.94px;
   }
 }

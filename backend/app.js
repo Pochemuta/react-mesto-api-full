@@ -1,41 +1,90 @@
+require('dotenv').config();
 const express = require('express');
-
-const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { errors } = require('celebrate');
-const cors = require('cors');
+const Console = require('console');
+const { celebrate, Joi, errors } = require('celebrate');
+const auth = require('./middlewares/auth');
+const error = require('./middlewares/error');
+const userRouter = require('./routes/users');
+const cardRouter = require('./routes/cards');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const router = require('./routes/index');
-const { PORT } = require('./config');
-const { corsOptions } = require('./utils/constants');
+const { PORT } = require('./utils/constants');
+const { login, createUser } = require('./controllers/users');
+const NotFoundError = require('./errors/not-found-error');
 
 const app = express();
-const handlerErrors = require('./middlewares/errors');
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
 });
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(requestLogger);
+const allowedCors = [
+  'http://mestofront.nem.nomoredomains.work',
+  'https://mestofront.nem.nomoredomains.work',
+  'localhost:3000',
+  'http://localhost:3000',
+];
 
-app.use('*', cors(corsOptions));
-app.use(bodyParser.json()); // для собирания JSON-формата
-app.use(cookieParser()); // подключаем парсер кук как мидлвэр
-app.use(requestLogger); // подключаем логгер запросов
+app.use((req, res, next) => {
+  const { origin } = req.headers;
+  const requestHeaders = req.headers['access-control-request-headers'];
+  const { method } = req;
+  const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
+  if (allowedCors.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', true);
+  }
 
-// для проверки crash-test
+  if (method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
+    res.header('Access-Control-Allow-Headers', requestHeaders);
+    return res.end();
+  }
+
+  return next();
+});
 app.get('/crash-test', () => {
   setTimeout(() => {
     throw new Error('Сервер сейчас упадёт');
   }, 0);
 });
 
-app.use('/', router);
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
+  }),
+}), login);
 
-app.use(errorLogger); // подключаем логгер ошибок
-app.use(errors());
-app.use(handlerErrors);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).allow(''),
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
+    avatar: Joi.string().empty().allow('')
+      .regex(/^(http:\/\/|https:\/\/)(www\.)?.+\..+\/?[\d\w\-._~:/?[\]@!$&'()*+,;=](#)?$/),
+    about: Joi.string().min(2).max(30).allow(''),
+  }),
+}), createUser);
 
-app.listen(PORT, () => {
-  // Если всё работает, консоль покажет, какой порт приложение слушает
-  console.log(`App listening on port ${PORT}`);
+app.use(auth);
+
+app.get('/signout', (req, res) => {
+  res.status(200).clearCookie('token', { domain: 'mestofront.nem.nomoredomains.work' }).end();
 });
+app.use('/users', userRouter);
+app.use('/cards', cardRouter);
+app.use('*', (req, res, next) => {
+  next(new NotFoundError('Такой страницы не существует'));
+});
+app.use(errorLogger);
+app.listen(PORT, () => {
+  Console.log(`App listening on port ${PORT}`);
+});
+app.use(errors());
+app.use(error);

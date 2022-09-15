@@ -1,17 +1,10 @@
 .header__logo {
-  padding-left: 27px;
-  padding-top: 28px;
+  margin-bottom: 41px;
 }
 
-@media (min-width: 620px) {
+@media screen and (max-width: 372px) {
   .header__logo {
-    padding-top: 45px;
-    padding-left: 20px;
-  }
-}
-
-@media (min-width: 918px) {
-  .header__logo {
-    padding-left: 0;
+    margin: 0 0 31.6px 27px;
+    width: 103.74px;
   }
 }

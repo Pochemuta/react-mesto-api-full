@@ -1,0 +1,20 @@
+.popup__form-input {
+  border: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16.94px;
+  outline: none;
+  padding-bottom: 13px;
+  width: 354px;
+}
+
+@media screen and (max-width: 415px) {
+  .popup__form-input {
+    width: 238px;
+  }
+}
+
+.popup__form-input:nth-of-type(even):invalid {
+  margin-top: 20px;
+}

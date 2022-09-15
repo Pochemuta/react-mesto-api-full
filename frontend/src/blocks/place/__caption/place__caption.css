@@ -1,0 +1,9 @@
+.place__caption {
+  align-content: center;
+  background-color: #fff;
+  border-radius: 0 0 10px 10px;
+  display: grid;
+  grid-template-columns: repeat(2, min-content);
+  grid-template-rows: calc(361px - 282px);
+  justify-content: space-between;
+}

@@ -1,41 +1,61 @@
-import { BASE_URL } from './constants'
+const { Api } = require('./api');
 
-const checkResponse = (response) => {
-  return response.ok 
-  ? response.json() 
-  : Promise.reject(new Error(`Ошибка ${response.status} : ${response.statusText}`))
-};
+class AuthApi extends Api {
+  registerUser(userData) {
+    const requestUrl = this._baseUrl + '/signup';
+    return fetch(requestUrl, {
+      headers: this._headers,
+      method: 'POST',
+      body: JSON.stringify(userData),
+    }).then(this._checkResponse);
+  }
 
-const headers = {
-  'Accept': 'application/json',
-  'Content-Type': 'application/json'
-};
+  authorizeUser(userData) {
+    const requestUrl = this._baseUrl + '/signin';
+    return fetch(requestUrl, {
+      headers: this._headers,
+      method: 'POST',
+      credentials: 'include',
+      body: JSON.stringify(userData),
+    }).then(this._checkAuthResponse);
+  }
 
-export const register = ( {password, email} ) => {
-  return fetch(`${BASE_URL}/signup`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({ password, email})
-  })
-  .then(res => checkResponse(res));
-};
+  checkToken() {
+    const requestUrl = this._baseUrl + '/users/me';
+    return fetch(requestUrl, {
+      headers: {
+        ...this._headers,
+      },
+      method: 'GET',
+      credentials: 'include',
+    }).then(this._checkResponse);
+  }
 
-export const authorize = ( {password, email} ) => {
-  return fetch(`${BASE_URL}/signin`, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({ password, email})
-  })
-  .then(res => checkResponse(res));
-};
+  logoutUser() {
+    const requestUrl = this._baseUrl + '/signout';
+    return fetch(requestUrl, {
+      headers: {
+        ...this._headers,
+      },
+      method: 'GET',
+      credentials: 'include',
+    }).then(this._checkAuthResponse);
+  }
 
-export const getUser = ( token ) => {
-  return fetch(`${BASE_URL}/users/me`, {
-    method: 'GET',
-    headers: {
-    ...headers,
-    "Authorization" : `Bearer ${token}`
-    },
-  })
-  .then(res => checkResponse(res));
+  _checkAuthResponse(res) {
+    if (res.ok) {
+      return res;
+    } else {
+      return Promise.reject(`${res.status} ${res.statusText}`);
+    }
+  }
 }
+
+const authApi = new AuthApi({
+  baseUrl: 'https://api.mestofront.nem.nomoredomains.work',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+export default authApi;

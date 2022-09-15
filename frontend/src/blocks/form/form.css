@@ -1,0 +1,6 @@
+.form {
+  display: grid;
+  gap: 216px 0;
+  grid-template-rows: auto;
+  max-height: 360px;
+}

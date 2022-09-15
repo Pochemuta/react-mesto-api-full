@@ -1,0 +1,7 @@
+.popup__container_type_change-avatar {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 272px;
+  justify-content: center;
+}

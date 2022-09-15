@@ -1,0 +1,18 @@
+.input-error {
+  color: #f00;
+  display: none;
+  font-size: 12px;
+  line-height: 14.52px;
+  margin: 5px 0 0;
+  max-width: 357px;
+}
+
+@media screen and (max-width: 415px) {
+  .input-error {
+    max-width: 238px;
+  }
+}
+
+.input-error:first-of-type {
+  margin-bottom: 13px;
+}

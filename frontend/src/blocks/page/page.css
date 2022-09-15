@@ -1,13 +1,18 @@
 .page {
-  font-family: 'Inter', Arial, sans-serif;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  -webkit-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
-  -moz-text-size-adjust: 100%;
   background-color: #000;
-  min-width: 320px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  font-family: "Inter", "Arial", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding: 45px 0 22.5vh;
+  position: relative;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+
+@media screen and (max-width: 372px) {
+  .page {
+    padding-bottom: 36px;
+  }
 }

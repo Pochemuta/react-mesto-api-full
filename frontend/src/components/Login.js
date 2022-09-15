@@ -1,66 +1,42 @@
-import React, {useState} from 'react';
-import * as authApi from '../utils/authApi';
+import React from 'react';
 
-function Login({onLogin}) {
+export default function Login(props) {
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
 
-  const [loginData, setLoginData] = useState({
-    email: '',
-    password: '',
-  });
+  const handleChangeEmail = (evt) => {
+    setEmail(evt.target.value);
+  };
 
-  const [message, setMessage] = useState('');
-
-  function handleChange(e) {
-    const {name, value} = e.target;
-    setLoginData({
-      ...loginData,
-      [name]: value,
-    });
+  const handleChangePassword = (evt) => {
+    setPassword(evt.target.value);
   };
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (!loginData.email || !loginData.password) {
-      return;
-    }
-
-    onLogin(loginData);
+    props.onUserAuthorize({
+      email, password,
+    });
   }
 
   return (
-    <section className="register" >
-      <form className="form-user" onSubmit={handleSubmit}>
-        <label className="form-user__title">Вход</label>
-        <input
-        required
-        name="email"
-        id="user-email"
-        placeholder="Email"
-        type="email"
-        minLength="2"
-        maxLength="30"
-        className="form-user__input"
-        onChange={handleChange}
-        value={loginData.email}/>
-        <span>{message}</span>
-        <input
-        required
-        name="password"
-        id="user-password"
-        placeholder="Пароль"
-        type="password"
-        minLength="2"
-        maxLength="30"
-        className="form-user__input"
-        onChange={handleChange}
-        value={loginData.password}
-        />
-        <span>{message}</span>
-        <button className="register__button" type="submit">Войти</button>
+    <div className="auth page__block_type_auth">
+      <h1 className="title auth__title">Вход</h1>
+      <form onSubmit={handleSubmit} action="/src/index.html"
+            className="form auth__form" method="post"
+            name="login">
+        <fieldset name="user-field" className="fieldset form__fieldset">
+          <input onChange={handleChangeEmail} value={email} className="input input_type_form input_theme_dark"
+                 type="email"
+                 placeholder="Email"/>
+          <input onChange={handleChangePassword} value={password} className="input input_type_form input_theme_dark"
+                 type="password"
+                 placeholder="Пароль"/>
+        </fieldset>
+        <button className="button button_theme_dark button_type_form-submit"
+                type="submit">Войти
+        </button>
       </form>
-
-    </section>
+    </div>
   );
 }
-
-export default Login;

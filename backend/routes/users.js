@@ -1,21 +1,31 @@
-const router = require('express').Router();
+const userRouter = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
 const {
-  getAllUsers,
-  getUserById,
-  updateProfile,
-  updateAvatar,
-  getUser,
+  getUsers, getUser, updateProfile, updateAvatar, getCurrentUser,
 } = require('../controllers/users');
-const {
-  validateUpdateAvatar,
-  validateGetUserById,
-  validateUpdateProfile,
-} = require('../middlewares/validations');
 
-router.get('/', getAllUsers);
-router.get('/me', getUser);
-router.get('/:userId', validateGetUserById, getUserById);
-router.patch('/me', validateUpdateProfile, updateProfile);
-router.patch('/me/avatar', validateUpdateAvatar, updateAvatar);
+userRouter.get('/', getUsers);
 
-module.exports = router;
+userRouter.get('/me', getCurrentUser);
+
+userRouter.patch('/me', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).required(),
+    about: Joi.string().min(2).max(30).required(),
+  }),
+}), updateProfile);
+
+userRouter.patch('/me/avatar', celebrate({
+  body: Joi.object().keys({
+    avatar: Joi.string().required()
+      .regex(/^(http:\/\/|https:\/\/)(www\.)?.+\..+\/?[\d\w\-._~:/?[\]@!$&'()*+,;=](#)?$/),
+  }),
+}), updateAvatar);
+
+userRouter.get('/:id', celebrate({
+  params: Joi.object().keys({
+    id: Joi.string().hex().length(24).required(),
+  }),
+}), getUser);
+
+module.exports = userRouter;

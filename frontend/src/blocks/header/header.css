@@ -1,15 +1,20 @@
 .header {
-  border-bottom: solid 1px rgba(84,84,84,0.7);
-  width: 100%;
+  border-bottom: 1px solid rgba(84, 84, 84, .7);
+  margin: 0 auto 40px;
   max-width: 880px;
-  padding-bottom: 28px;
   display: flex;
   justify-content: space-between;
-
+  align-items: flex-start;
 }
 
-@media (min-width: 620px) {
+@media screen and (max-width: 920px) {
   .header {
-    padding-bottom: 35px;
+    margin: 45px 40px 40px;
+  }
+}
+
+@media screen and (max-width: 372px) {
+  .header {
+    margin: 28px 0 38.25px;
   }
 }
