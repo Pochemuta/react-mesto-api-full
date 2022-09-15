@@ -1,80 +1,48 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import PopupWithForm from "./PopupWithForm";
 
-function EditAvatarPopup(props) {
-    const [avatar, setAvatar] = useState('');
-    const [avatarError, setAvatarError] = useState('Обновите аватар');
-    const [avatarDirty, setAvatarDirty] = useState(false);
-    const [formValid, setFormValid] = useState(false);
+ export default function EditAvatarPopup(props) {
+    const avatar = React.useRef()
 
-    useEffect((e) => {
-        setAvatar('');
-        setAvatarError('');
-        if (props.isOpen) {
-            setFormValid(true);
-        }
-    }, [props.isOpen]);
 
-    useEffect(() => {
-        if (avatarError) {
-            setFormValid(false);
-        } else {
-            setFormValid(true);
-        }
-    }, [avatarError]);
-
-    function handleChangeAvatar(e) {
-        setAvatar(e.target.value);
-        if (!e.target.validity.valid) {
-            setAvatarError('Введите URL');
-            if (!e.target.value) {
-                setAvatarError('Название карточки не должно быть пустым');
-            }
-        } else {
-            setAvatarError('');
-        }
+    function handleSubmit(e) {
+        // Запрещаем браузеру переходить по адресу формы
+        e.preventDefault();
+      
+        // Передаём значения управляемых компонентов во внешний обработчик
+        props.onSubmit({
+            avalink: avatar.current.value
+        });
     }
 
-  function handleSubmit() {
-    props.onUpdateAvatar({ avatar });
-      props.onClose();
-    }
-
-    function blurHandler(e) {
-        switch (e.target.name) {
-            case 'avatar':
-                setAvatarDirty(true);
-                break;
-        }
-    }
+    React.useEffect(() => {
+        avatar.current.value = ''
+    }, [props.isOpen])
 
     return (
         <PopupWithForm
-            title='Обновить аватар'
-            name='avatar'
             isOpen={props.isOpen}
             onClose={props.onClose}
-            btnText='Сохранить'
-            save='Сохранение...'
-            onSubmitForm={handleSubmit}
-            formValid={avatar && formValid}
-        >
-            <div className="form__column">
-                <input
-                    className="form__input form__input_link_avatar"
-                    type="url"
-                    id="avatar"
-                    name="avatar"
-                    placeholder="Ссылка на аватар"
-                    value={avatar}
-                    onChange={handleChangeAvatar}
-                    onBlur={blurHandler}
-                    required
-                />
-                {(avatarDirty && avatarError) && <div className="error error_below-avatar">{avatarError}</div>}
-            </div>
-        </PopupWithForm>
-    );
-}
+            onSubmit={handleSubmit}
+            onClickOnOverlay={props.onClickOnOverlay}
+            form={'update-avatar'}
+            title={'Обновить аватар'}
+            buttonText={'Сохранить'}
 
-export default EditAvatarPopup;
+            children={(
+                <>
+                    <input 
+                        ref={avatar}
+                        type='url'
+                        className='popup__name popup__input'
+                        name="avalink"
+                        id="avalink"
+                        placeholder="Ссылка на картинку"
+                        required
+                    />
+                    <span className="popup__avalink-error"/>
+                </>
+            )}
+        />
+    )
+}

@@ -1,27 +1,27 @@
 require('dotenv').config();
 const express = require('express');
 
-const cors = require('cors');
-const { errors } = require('celebrate');
-const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const routerErrorWay = require('./routes/errorsway');
-const { createUser, login } = require('./controllers/users');
+const mongoose = require('mongoose');
+const { errors } = require('celebrate');
+const cors = require('./middlewares/cors');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+const routes = require('./routes');
+const errorHandler = require('./utils/error-handler');
+const NotFound = require('./utils/not-found');
+const { login, postUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
-const errorHandler = require('./middlewares/errorHandler');
-const { registerValid, loginValid } = require('./middlewares/validationJoi');
-const { requestLogger, errorLoger } = require('./middlewares/logger');
+const { signupValidity, loginValidity } = require('./middlewares/validation');
 
-// Слушаем 3000 порт
 const { PORT = 3000 } = process.env;
-
 const app = express();
 
-app.use(requestLogger);
-app.use(cors());
+mongoose.connect('mongodb://localhost:27017/mestodb', () => {
+  console.log('подключение к базе данных прошло успешно');
+});
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors);
 
 app.get('/crash-test', () => {
   setTimeout(() => {
@@ -29,22 +29,24 @@ app.get('/crash-test', () => {
   }, 0);
 });
 
-app.post('/signup', registerValid, createUser);
-app.post('/signin', loginValid, login);
+app.use(requestLogger);
 
-// подключаемся к серверу mongo
-mongoose.connect('mongodb://localhost:27017/mestodb', { useNewUrlParser: true });
-
-app.use('/cards', require('./routes/cards'));
+app.post('/signin', loginValidity, login);
+app.post('/signup', signupValidity, postUser);
 
 app.use(auth);
 
-app.use(routerErrorWay);
+app.use(routes);
 
-app.use(errorLoger);
+app.use((req, res, next) => {
+  next(new NotFound('Не найден маршрут'));
+});
+
+app.use(errorLogger);
 
 app.use(errors());
-
 app.use(errorHandler);
 
-app.listen(PORT);
+app.listen(PORT, () => {
+  console.log(`серв запущен на ${PORT} порту`);
+});

@@ -1,76 +1,108 @@
-class Api {
-    constructor({ url, headers }) {
-        this._url = url;
-        this._headers = headers;
+export default class Api {
+    constructor(options){
+        this._url = options.baseUrl
+        this._headers = options.headers 
     }
 
-    _checkRes(res) {
-        return res.ok ? res.json() : Promise.reject(`Что-то пошло не так: ${res}`);
+    _errCheck(res) {
+        if(res.ok) {
+            return res.json()
+        }
+
+        return Promise.reject(`Ошибка API -> ${res.status}`)
     }
 
-    getCardsData(token) {
-        return fetch(`${this._url}cards`, {
-            method: "GET",
-            headers: { ...this._headers, 'Authorization': `Bearer ${token}` },
+    _useHeaders() {
+        const token = localStorage.getItem('token')
+        return {
+            'Authorization' : `Bearer ${token}`,
+            ...this._headers
+        }
+    }
+
+
+    getUserFromSrv() {
+        return fetch(`${this._url}/users/me`, {
+            method: 'GET',
+            headers: this._useHeaders()
         })
-            .then(this._checkRes)
+        .then(this._errCheck)
     }
 
-    postCard(cardData, token) {
-        return fetch(`${this._url}cards`, {
-            method: "POST",
-            headers: { ...this._headers, 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify(cardData),
-        })
-            .then(this._checkRes)
+    getInitialCards() {
+       return fetch(`${this._url}/cards`, {
+        method: 'GET',
+        headers: this._useHeaders()
+       })
+       .then(this._errCheck)
     }
 
-    deleteCard(cardId, token) {
-        return fetch(`${this._url}cards/${cardId}`, {
-            method: "DELETE",
-            headers: { ...this._headers, 'Authorization': `Bearer ${token}` },
+    patchProfile(data) {
+        return fetch(`${this._url}/users/me`, {
+            method: 'PATCH',
+            headers: this._useHeaders(),
+            body: JSON.stringify({
+                name: data.username,
+                about: data.job
+            })
         })
-            .then(this._checkRes)
+        .then(this._errCheck)
     }
 
-    getUserData(token) {
-        return fetch(`${this._url}users/me`, {
-            method: "GET",
-            headers: { ...this._headers, 'Authorization': `Bearer ${token}` }
+    sendNewImage(data) {
+        return fetch(`${this._url}/cards`, {
+            method: 'POST',
+            headers: this._useHeaders(),
+            body: JSON.stringify({
+                name: data.name,
+                link: data.link
+            })
         })
-            .then(this._checkRes)
+        .then(this._errCheck)
     }
 
-    patchUserData(userData, token) {
-        return fetch(`${this._url}users/me`, {
-            method: "PATCH",
-            headers: { ...this._headers, 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify(userData),
+    deleteCardFromSrv(data) {
+        return fetch(`${this._url}/cards/${data._id}`, {
+            method: 'DELETE',
+            headers: this._useHeaders()
         })
-            .then(this._checkRes)
+        .then(this._errCheck)
     }
 
-    patchAvatar(userAvatarLink, token) {
-        return fetch(`${this._url}users/me/avatar`, {
-            method: "PATCH",
-            headers: { ...this._headers, 'Authorization': `Bearer ${token}` },
-            body: JSON.stringify(userAvatarLink),
+
+    sendLike(_id) {
+        return fetch(`${this._url}/cards/${_id}/likes`, {
+          method: 'PUT',
+          headers: this._useHeaders(),
         })
-            .then(this._checkRes)
+          .then(this._errCheck)
+      }
+
+    deleteLike(_id) {
+        return fetch(`${this._url}/cards/${_id}/likes`, {
+          method: 'DELETE',
+          headers: this._useHeaders(),
+        })
+          .then(this._errCheck)
     }
 
-    changeLikeCardStatus(cardId, isLiked, token) {
-        return fetch(`${this._url}cards/likes/${cardId}`, {
-            method: `${isLiked ? "DELETE" : "PUT"}`,
-            headers: { ...this._headers, 'Authorization': `Bearer ${token}` }
-        })
-            .then(this._checkRes)
+    avatarUpload(avatar) {
+        return fetch(`${this._url}/users/me/avatar`, {
+            method: 'PATCH',
+            headers: this._useHeaders(),
+            body: JSON.stringify({
+                avatar: avatar.avalink
+            })
+          })
+            .then(this._errCheck)
     }
+
 }
 
 export const api = new Api({
-    url: 'https://api.dan2491.nomoredomains.work/',
+
+    baseUrl: 'http://api.darkwingduck.nomoredomains.xyz',
     headers: {
-        'Content-Type': 'application/json',
+      'Content-Type': 'application/json'
     }
-})
+  })

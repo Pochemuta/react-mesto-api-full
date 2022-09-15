@@ -1,113 +1,84 @@
-import React, { useEffect, useState } from "react";
-import PopupWithForm from "./PopupWithForm";
+import React from "react"
+import PopupWithForm from "./PopupWithForm"
 
-function AddPlacePopup(props) {
+export default function AddPlacePopup(props) {
 
-    const [name, setName] = useState('');
-    const [link, setLink] = useState('');
-    const [cardError, setCardError] = useState('Введите название карточки');
-    const [linkError, setLinkError] = useState('Введите URL');
-    const [cardDirty, setCardDirty] = useState(false);
-    const [linkDirty, setLinkDirty] = useState(false);
-    const [formValid, setFormValid] = useState(false);
+    const [title, setTitle]=React.useState('')
+    const [link, setLink]=React.useState('')
 
-    useEffect(() => {
-        setName('');
-        setLink('');
-    }, [props.isOpen]);
 
-    useEffect(() => {
-        if (cardError || linkError) {
-            setFormValid(false);
-        } else {
-            setFormValid(true)
-        }
-    }, [cardError, linkError]);
-
-    function handlerChangeName(e) {
-        setName(e.target.value);
-        if (!e.target.validity.valid && e.target.value.length < 2 || e.target.value.length > 30) {
-            setCardError('Введите название карточки. Название должно быть длинее 2 и меньше 30');
-            if (!e.target.value) {
-                setCardError('Название карточки не должно быть пустым');
-            }
-        } else {
-            setCardError('');
-        }
+    function handleSetTitle(evt) {
+        setTitle(evt.target.value)
     }
 
-    function handlerChangeLink(e) {
-        setLink(e.target.value);
-        if (e.target.value.length < 2 || e.target.value.length > 200) {
-            setLinkError('Введите URL');
-            if (!e.target.value) {
-                setLinkError('URL не может быть пустым');
-            }
-        } else {
-            setLinkError('');
-        }
+    function handleSetLink(evt) {
+        setLink(evt.target.value)
     }
 
-    function handleSubmit() {
-        props.onAddPlace({
-            name,
-            link
+
+    function handleSubmit(e) {
+        // Запрещаем браузеру переходить по адресу формы
+        e.preventDefault();
+      
+        // Передаём значения управляемых компонентов во внешний обработчик
+        props.onSubmit({
+            name: title,
+            link: link,
         });
-        props.onClose();
     }
 
-    function blurHandler(e) {
-        switch (e.target.name) {
-            case 'card':
-                setCardDirty(true);
-                break;
-            case 'link':
-                setLinkDirty(true);
-                break;
+
+    //Очистка полей формы при открытии 
+
+    React.useEffect(() => {
+        if (props.isOpen) {
+            setTitle('')
+            setLink('')
         }
-    }
+    }, [props.isOpen])
 
-    return (
+
+    return(
         <PopupWithForm
-            title='Новое место'
-            name='add'
-            isOpen={props.isOpen}
-            onClose={props.onClose}
-            btnText='Создать'
-            creation='Создание...'
-            onSubmitForm={handleSubmit}
-            formValid={formValid}
-        >
-            <div className="form__column">
-                <input
-                    className="form__input form__input_card_name"
-                    type="text"
-                    id="card"
-                    name="card"
-                    placeholder="Название"
-                    minLength="2"
-                    maxLength="30"
-                    onChange={handlerChangeName}
-                    onBlur={blurHandler}
-                    value={name}
-                    required
-                />
-                {(cardDirty && cardError) && <div className="error">{cardError}</div>}
-                <input
-                    className="form__input form__input_link_picture"
-                    type="url"
-                    id="link"
-                    name="link"
-                    placeholder="Ссылка на картинку"
-                    value={link}
-                    onChange={handlerChangeLink}
-                    onBlur={blurHandler}
-                    required
-                />
-                {(linkDirty && linkError) && <div className="error error_below">{linkError}</div>}
-            </div>
-        </PopupWithForm>
-    );
-}
+                isOpen={props.isOpen}
+                onClose={props.onClose}
+                onSubmit={handleSubmit}
+                onClickOnOverlay={props.onClickOnOverlay}
+                form={'add-image'}
+                title={'Новое место'}
+                buttonText={'Создать'}
 
-export default AddPlacePopup;
+                children={(
+                    <>
+                        <input 
+                            onChange={handleSetTitle}
+                            value={title}
+                            type='text'
+                            className='popup__name popup__input'
+                            name="name"
+                            id="new-card-title"
+                            maxLength="30"
+                            minLength="2"
+                            placeholder='Название'
+                            required
+                        />
+                        <span className="popup__new-card-title-error"/>
+
+                        <input 
+                            onChange={handleSetLink}
+                            value={link}
+                            type='url'
+                            className='popup__name popup__input'
+                            name="link"
+                            id="new-card-link"
+                            placeholder='Ссылка на картинку'
+                            required
+                        />
+
+                        <span className="popup__new-card-link-error"/>
+
+                    </>
+                )}
+            />
+    )
+}

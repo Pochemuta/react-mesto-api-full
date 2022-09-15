@@ -1,29 +1,35 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import mestoLogo from '../images/mestologo.svg';
+import React from 'react';
+import { withRouter, useLocation, Link } from 'react-router-dom';
+import logo from "../images/logo.svg";
 
 function Header(props) {
-    const put = <Link className="header__link" to='/signin'>Войти</Link>;
-    const exit = <Link className="header__link" to='/' onClick={props.logout}>Выйти</Link>;
-    const register = <Link className="header__link" to='/signup'>Регистрация</Link>;
-    const location = useLocation();
+    const { somePath } = useLocation()
 
-    return (
+    const linkPath = `${ somePath === '/sign-up' ? '/sign-in' : '/sign-up'}`
+    const linkName = `${ somePath === '/sign-in' ? 'Войти' : 'Регистрация'}` 
+
+    function signOut() {
+        props.setIsLoggedIn(false)
+        localStorage.removeItem('token')
+        props.history.push('/sign-up')
+        // console.log('token')
+    }
+    
+    return(
         <header className="header">
-        {/* <div className="header__conteiner-phone">
-                <p className="header__email">{props.email}</p>
-                {props.loggedIn && exit}
-            </div> */}
-        <div className="header__row">
-          <img className="header__logo" src={mestoLogo} alt="Место" />
-          <div className="header__row">
-            <p className="header__email header__email-right">{props.email}</p>
-            {location.pathname === '/signup' && put}
-            {location.pathname === '/signin' && register}
-            {props.loggedIn && exit}
-          </div>
-            </div>
-        </header >
-    );
+            <img src={logo} className="header__logo" alt="Логотип"/>
+            <nav className='header__nav'>
+                {props.isLoggedIn ?
+                    <>
+                        <p className='header__nav header__mail'>{props.email}</p>
+                        <Link to='/sign-in' className='header__nav header__toggling-link' type='button' onClick={signOut}>Выйти</Link>
+                    </>
+                     : (<Link to={linkPath} className='header__nav header__toggling-link' type='button'>{linkName}</Link>)
+            }
+            </nav>
+        </header>
+    )
+    
 }
-export default Header;
+
+export default withRouter(Header)

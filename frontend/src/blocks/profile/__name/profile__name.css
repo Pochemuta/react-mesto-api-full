@@ -1,24 +1,26 @@
 .profile__name {
-    font-family: 'Inter', Arial, sans-serif;
-    font-style: normal;
-    font-weight: 500;
+    max-width: 294px;
     font-size: 42px;
+    font-weight: 500;
     line-height: 48px;
-    /* or 114% */
-    color: #FFFFFF;
     margin: 0;
-    margin-bottom: 7px;
-    white-space: nowrap; /* Запрещаем перенос строк */
-    overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 300px;
-  }
+    white-space: nowrap;
+    overflow: hidden;
+}
 
-  @media screen and (max-width: 690px) {
+@media screen and(max-width:670px) {
+    .profile__name {
+        max-width: 189px;
+        text-align: center;
+    }
+}
+
+@media screen and (max-width:400px) {
     .profile__name {
         font-size: 27px;
         line-height: 33px;
-        margin-bottom: 0;
-        max-width: 238px;
-      }
-  }
+        padding-bottom: 14px;
+        max-width: 189px;
+    }
+}

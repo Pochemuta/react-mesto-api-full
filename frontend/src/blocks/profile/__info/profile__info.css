@@ -1,15 +1,10 @@
 .profile__info {
-    max-width: 100%;
+    max-width:336px;
+    margin-top: 22px;
+    margin-bottom: 25px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    margin-left: 30px;
+    position: relative;
+    padding-left: 4px;
 }
 
-@media screen and (max-width: 899px) {
-    .profile__info {
-        align-items: center;
-        margin-left: 26px;
-    }
-}
