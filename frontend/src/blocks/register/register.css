@@ -1,7 +1,9 @@
 .register {
     display: flex;
+    align-self: center;
     flex-direction: column;
-    margin: auto;
     align-items: center;
-    text-align: center;
+    padding-top: 60px;
+    max-width: 358px;
+    width: 100%;
 }

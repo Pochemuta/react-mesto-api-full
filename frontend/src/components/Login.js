@@ -1,52 +1,50 @@
-import React from "react";
-import { withRouter } from 'react-router-dom';
+import { useState } from 'react';
 
-class Login extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      username: '',
-      password: ''
-    }
-    this.handleSubmit = this.handleSubmit.bind(this)
-    this.handleChange = this.handleChange.bind(this)
-    this.nameButton = props.nameButton
+
+export default function Login({ onLoginSubmit }) {
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    onLoginSubmit(password, email);
   }
 
-  handleChange(event) {
-    const target = event.target
-    const value = target.value
-    const name = target.name
-    this.setState({
-      [name]: value
-    })
-  }
+  return (
+    <div className="login">
+      <h3 className="login__title">Вход</h3>
+      <form className={`login__form`} onSubmit = {handleSubmit}>
 
-  handleSubmit(e) {
-    e.preventDefault()
-    if (!this.state.username || !this.state.password) {
-      return
-    }
-    this.props.onLogin(this.state.username, this.state.password)
-  }
+        <input
+          type="email"
+          className="login__input"
+          placeholder="E-mail"
+          name="email"
+          id="email"
+          required
+          value={email || ''}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-  render() {
-    return (
-      <>
-      <div className="register">
-        
-        <form className="register__form" onSubmit={this.handleSubmit}>
-        <h2 className="register__title">Вход</h2>
-          <input  id="username" name="username" value={this.state.username} 
-          onChange={this.handleChange} className="register__input" type="text" placeholder="Email" required />
-          <input id="password" name="password" value={this.state.password} 
-          onChange={this.handleChange} className="register__input" type="password" placeholder="Пароль" required />
-          <button className="register__submit" type="submit">Войти</button>
-        </form>
-      </div>
-      </>
-    )
-  }
+        <input
+          type="password"
+          className="login__input"
+          placeholder="Пароль"
+          name="password"
+          id="password"
+          required
+          value={password || ''}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button
+          type="submit"
+          className="login__submit"
+          aria-label="Отправить данные"
+        >Войти</button>
+
+      </form>
+    </div>
+  )
 }
-
-export default withRouter(Login)

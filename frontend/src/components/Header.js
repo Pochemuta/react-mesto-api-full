@@ -1,35 +1,27 @@
-import React from 'react';
-import { withRouter, useLocation, Link } from 'react-router-dom';
-import logo from "../images/logo.svg";
+import { Route, Switch, Link } from 'react-router-dom';
 
-function Header(props) {
-    const { somePath } = useLocation()
 
-    const linkPath = `${ somePath === '/sign-up' ? '/sign-in' : '/sign-up'}`
-    const linkName = `${ somePath === '/sign-in' ? 'Войти' : 'Регистрация'}` 
+function Header({ onSignOut, userData }) {
 
-    function signOut() {
-        props.setIsLoggedIn(false)
-        localStorage.removeItem('token')
-        props.history.push('/sign-up')
-        // console.log('token')
-    }
-    
-    return(
-        <header className="header">
-            <img src={logo} className="header__logo" alt="Логотип"/>
-            <nav className='header__nav'>
-                {props.isLoggedIn ?
-                    <>
-                        <p className='header__nav header__mail'>{props.email}</p>
-                        <Link to='/sign-in' className='header__nav header__toggling-link' type='button' onClick={signOut}>Выйти</Link>
-                    </>
-                     : (<Link to={linkPath} className='header__nav header__toggling-link' type='button'>{linkName}</Link>)
-            }
-            </nav>
-        </header>
-    )
-    
+  return (
+    <header className="header">
+      <div className="header__logo"></div>
+      <Switch>
+        <Route exact path="/">
+          <div className="header__user-email-logout">
+            <p className="header__user-email">{userData.email}</p>
+            <Link to="login" className="header__logout-link" onClick = {onSignOut}>Выйти</Link>
+          </div>
+        </Route>
+        <Route path="/register">
+          <Link to="login" className="header__login-link">Войти</Link>
+        </Route>
+        <Route path="/login">
+          <Link to="register" className="header__login-link">Регистрация</Link>
+        </Route>
+      </Switch>
+    </header>
+  )
 }
 
-export default withRouter(Header)
+export default Header;

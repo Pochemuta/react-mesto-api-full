@@ -1,48 +1,41 @@
-import React from "react";
-import PopupWithForm from "./PopupWithForm";
-
- export default function EditAvatarPopup(props) {
-    const avatar = React.useRef()
+import { useRef, useEffect } from 'react';
+import PopupWithForm from './PopupWithForm';
 
 
-    function handleSubmit(e) {
-        // Запрещаем браузеру переходить по адресу формы
-        e.preventDefault();
-      
-        // Передаём значения управляемых компонентов во внешний обработчик
-        props.onSubmit({
-            avalink: avatar.current.value
-        });
-    }
+export default function EditAvatarPopup(props) {
 
-    React.useEffect(() => {
-        avatar.current.value = ''
-    }, [props.isOpen])
+  const inputAvatarUrlRef = useRef();
 
-    return (
-        <PopupWithForm
-            isOpen={props.isOpen}
-            onClose={props.onClose}
-            onSubmit={handleSubmit}
-            onClickOnOverlay={props.onClickOnOverlay}
-            form={'update-avatar'}
-            title={'Обновить аватар'}
-            buttonText={'Сохранить'}
+  useEffect(() => {
+    inputAvatarUrlRef.current.value = '';
+  }, [props.isOpen])
 
-            children={(
-                <>
-                    <input 
-                        ref={avatar}
-                        type='url'
-                        className='popup__name popup__input'
-                        name="avalink"
-                        id="avalink"
-                        placeholder="Ссылка на картинку"
-                        required
-                    />
-                    <span className="popup__avalink-error"/>
-                </>
-            )}
-        />
-    )
+  function handleSubmit(e) {
+    e.preventDefault();
+    props.onUpdateAvatar({
+      avatar: inputAvatarUrlRef.current.value
+    });
+  }
+
+
+  return (
+    <PopupWithForm
+      name="edit-avatar"
+      title="Обновить аватар"
+      isOpen={props.isOpen}
+      onClose = {props.onClose}
+      buttonText="Сохранить"
+      onSubmit={handleSubmit}
+    >
+      <input
+        ref={inputAvatarUrlRef}
+        type="url"
+        className="popup__input popup__input_value_link"
+        placeholder="Ссылка на аватар"
+        name="avatarLink"
+        id="avatar-link"
+        required/>
+      <span className="avatar-link-error popup__form-error-msg"></span>
+    </PopupWithForm>
+  )
 }

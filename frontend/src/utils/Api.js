@@ -1,108 +1,112 @@
-export default class Api {
-    constructor(options){
-        this._url = options.baseUrl
-        this._headers = options.headers 
-    }
-
-    _errCheck(res) {
-        if(res.ok) {
-            return res.json()
-        }
-
-        return Promise.reject(`Ошибка API -> ${res.status}`)
-    }
-
-    _useHeaders() {
-        const token = localStorage.getItem('token')
-        return {
-            'Authorization' : `Bearer ${token}`,
-            ...this._headers
-        }
-    }
-
-
-    getUserFromSrv() {
-        return fetch(`${this._url}/users/me`, {
-            method: 'GET',
-            headers: this._useHeaders()
-        })
-        .then(this._errCheck)
+class Api {
+    constructor(config) {
+        this._baseUrl = config.baseUrl;
+        this._headers = config.headers
     }
 
     getInitialCards() {
-       return fetch(`${this._url}/cards`, {
-        method: 'GET',
-        headers: this._useHeaders()
-       })
-       .then(this._errCheck)
-    }
-
-    patchProfile(data) {
-        return fetch(`${this._url}/users/me`, {
-            method: 'PATCH',
-            headers: this._useHeaders(),
-            body: JSON.stringify({
-                name: data.username,
-                about: data.job
+        return fetch(`${this._baseUrl}/cards`, {
+                method: 'GET',
+                headers: this._headers,
+                credentials: 'include',
             })
-        })
-        .then(this._errCheck)
+            .then(res => this._handleResponse(res))
     }
 
-    sendNewImage(data) {
-        return fetch(`${this._url}/cards`, {
-            method: 'POST',
-            headers: this._useHeaders(),
-            body: JSON.stringify({
-                name: data.name,
-                link: data.link
+    _handleResponse(res) {
+        if (res.ok) { return res.json() }
+        return Promise.reject(`Ошибка: ${res.status}`);
+    }
+
+    getUserInfo() {
+        return fetch(`${this._baseUrl}/users/me`, {
+                method: 'GET',
+                headers: this._headers,
+                credentials: 'include',
             })
-        })
-        .then(this._errCheck)
+            .then(res => this._handleResponse(res))
     }
 
-    deleteCardFromSrv(data) {
-        return fetch(`${this._url}/cards/${data._id}`, {
-            method: 'DELETE',
-            headers: this._useHeaders()
-        })
-        .then(this._errCheck)
-    }
-
-
-    sendLike(_id) {
-        return fetch(`${this._url}/cards/${_id}/likes`, {
-          method: 'PUT',
-          headers: this._useHeaders(),
-        })
-          .then(this._errCheck)
-      }
-
-    deleteLike(_id) {
-        return fetch(`${this._url}/cards/${_id}/likes`, {
-          method: 'DELETE',
-          headers: this._useHeaders(),
-        })
-          .then(this._errCheck)
-    }
-
-    avatarUpload(avatar) {
-        return fetch(`${this._url}/users/me/avatar`, {
-            method: 'PATCH',
-            headers: this._useHeaders(),
-            body: JSON.stringify({
-                avatar: avatar.avalink
+    editUserInfo(data) {
+        return fetch(`${this._baseUrl}/users/me`, {
+                method: 'PATCH',
+                headers: this._headers,
+                body: JSON.stringify({
+                    name: data.name,
+                    about: data.about
+                }),
+                credentials: 'include',
             })
-          })
-            .then(this._errCheck)
+            .then(res => this._handleResponse(res))
+    }
+
+    editUserAvatar(data) {
+        return fetch(`${this._baseUrl}/users/me/avatar`, {
+                method: 'PATCH',
+                headers: this._headers,
+                body: JSON.stringify({
+                    avatar: data.avatar,
+                }),
+                credentials: 'include',
+            })
+            .then(res => this._handleResponse(res))
+    }
+
+    postCard(data) {
+        return fetch(`${this._baseUrl}/cards`, {
+                method: 'POST',
+                headers: this._headers,
+                body: JSON.stringify({
+                    name: data.name,
+                    link: data.link
+                }),
+                credentials: 'include',
+            })
+            .then(res => this._handleResponse(res))
+    }
+
+    deleteCard(cardId) {
+        return fetch(`${this._baseUrl}/cards/${cardId}`, {
+                method: 'DELETE',
+                headers: this._headers,
+                credentials: 'include',
+            })
+            .then(res => this._handleResponse(res))
+    }
+
+    _makeLike(cardId) {
+        return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
+                method: 'PUT',
+                headers: this._headers,
+                credentials: 'include',
+            })
+            .then(res => this._handleResponse(res))
+    }
+
+    _makeUnlike(cardId) {
+        return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
+                method: 'DELETE',
+                headers: this._headers,
+                credentials: 'include',
+            })
+            .then(res => this._handleResponse(res))
+    }
+
+    changeLikeCardStatus(cardId, isLiked) {
+        if (isLiked) {
+            return this._makeUnlike(cardId)
+        } else {
+            return this._makeLike(cardId)
+        }
     }
 
 }
 
-export const api = new Api({
-
-    baseUrl: 'http://api.darkwingduck.nomoredomains.xyz',
+const configApi = {
+    baseUrl: 'https://api.viriyalova-mesto.nomoredomains.work',
     headers: {
-      'Content-Type': 'application/json'
+        'Content-Type': 'application/json'
     }
-  })
+}
+
+export const api = new Api(configApi);

@@ -3,10 +3,6 @@
   
 Пожалуйста, прикрепите в это описание ссылку на сайт, размещенный на Яндекс.Облаке.
 
-Ссылка на фронт проекта:
-http://darkwingduck.nomoredomains.work
-Ссылка на апи:
-http://api.darkwingduck.nomoredomains.xyz/
+FRONT: https://viriyalova-mesto.nomoredomains.work
 
-ip сервера:
-51.250.98.229
+API: https://api.viriyalova-mesto.nomoredomains.work

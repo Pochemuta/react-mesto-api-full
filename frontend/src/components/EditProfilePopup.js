@@ -1,90 +1,64 @@
-import React from "react"
-import PopupWithForm from "./PopupWithForm"
-import { CurrentUserContext } from "../contexts/CurrentUserContext"
-
+import { useState, useContext, useEffect } from 'react';
+import PopupWithForm from './PopupWithForm';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
 
 export default function EditProfilePopup(props) {
-    const [name, setName]= React.useState('')
-    const [descrtiption, setDescription]= React.useState('')
-    const currentUser = React.useContext(CurrentUserContext)
+
+  const currentUser = useContext(CurrentUserContext);
+
+  const [name, setName] = useState(currentUser.name);
+  const [description, setDescription] = useState(currentUser.about);
+
+  useEffect(() => {
+    setName(currentUser.name);
+    setDescription(currentUser.about);
+}, [currentUser, props.isOpen]);
 
 
-    // React.useEffect(() => {
-    //     setName(currentUser.name);
-    //     setDescription(currentUser.jo);
-    //   }, [currentUser]); 
+  function handleSubmit(e) {
+    e.preventDefault();
+    props.onUpdateUser({
+      name,
+      about: description,
+    });
+  }
 
-    function editDescription(evt) {
-        setDescription(evt.target.value)
-    }
-
-    function editName(evt) {
-        setName(evt.target.value)
-    }
-
-    function handleSubmit(e) {
-        // Запрещаем браузеру переходить по адресу формы
-        e.preventDefault();
-      
-        // Передаём значения управляемых компонентов во внешний обработчик
-        props.onSubmit({
-            username: name,
-            job: descrtiption,
-        });
-      }
-
-      React.useEffect(() => {
-        if (props.isOpen) {
-            setName(currentUser.name)
-            setDescription(currentUser.about)
-        }
-    }, [props.isOpen, currentUser])
-
-
-    return(
-        <PopupWithForm
-            isOpen={props.isOpen}
-            onClose={props.onClose}
-            onSubmit={handleSubmit}
-            onClickOnOverlay={props.onClickOnOverlay}
-            form={'popup'}
-            title={'Редактировать профиль'}
-            buttonText={'Сохранить'}
-
-            children={(
-                <>
-                    <input 
-                        type='text'
-                        className='popup__name popup__input'
-                        name="username"
-                        id="name"
-                        maxLength="40"
-                        minLength="2"
-                        placeholder='Твое имя, странник?'
-                        required
-                        onChange={editName}
-                        value={name}
-                    />
-                    <span className="popup__name-error"/>
-
-                    <input 
-                        type='text'
-                        className='popup__name popup__input'
-                        name="job"
-                        id="job"
-                        maxLength="200"
-                        minLength="2"
-                        placeholder='Кто ты, воин?'
-                        required
-                        onChange={editDescription}
-                        value={descrtiption}
-                    />
-
-                    <span className="popup__job-error"/>
-
-                </>
-            )}
-        />
-    )
+  return (
+    <PopupWithForm
+      name="edit"
+      title="Редактировать профиль"
+      isOpen = {props.isOpen}
+      onClose = {props.onClose}
+      buttonText="Сохранить"
+      onSubmit = {handleSubmit}
+    >
+      <input
+        type="text"
+        className="popup__input popup__input_text_name"
+        placeholder="Имя"
+        name="userName"
+        id="user-name"
+        minLength="2"
+        maxLength="40"
+        required
+        value={name || ''}
+        onChange={(e) => setName(e.target.value)}
+      />
+      <span className="name-error popup__form-error"></span>
+      <input
+        type="text"
+        className="popup__input popup__input_text_work"
+        placeholder="Род деятельности"
+        name="userJob"
+        id="user-job"
+        minLength="2"
+        maxLength="200"
+        required
+        value={description || ''}
+        onChange={(e) => setDescription(e.target.value)}
+      />
+      <span className="profession-error popup__form-error popup__form-error_pos_under"></span>
+    </PopupWithForm>
+  )
 }

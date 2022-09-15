@@ -1,27 +1,27 @@
 const allowedCors = [
-  'http://localhost:3000',
-  'https://api.darkwingduck.nomoredomains.xyz',
-  'http://api.darkwingduck.nomoredomains.xyz',
-  'https://darkwingduck.nomoredomains.work',
-  'http://darkwingduck.nomoredomains.work',
+    'http://localhost:3000',
+    'https://viriyalova-mesto.nomoredomains.work',
+    'http://viriyalova-mesto.nomoredomains.work'
 ];
 
-const cors = (req, res, next) => {
-  const { origin } = req.headers;
-  const { method } = req;
-  const requestHeaders = req.headers['access-control-request-headers'];
-  const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
-  if (allowedCors.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-    res.header('Access-Control-Allow-Credentials', true);
-  }
-  if (method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
-    res.header('Access-Control-Allow-Headers', requestHeaders);
-    return res.end();
-  }
+module.exports = (req, res, next) => {
+    const { origin } = req.headers;
+    const { method } = req;
+    const requestHeaders = req.headers['access-control-request-headers'];
 
-  return next();
+    const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
+
+    console.log('111', origin)
+
+    if (allowedCors.includes(origin)) {
+        res.header('Access-Control-Allow-Origin', origin);
+        res.header('Access-Control-Allow-Credentials', true);
+    }
+    if (method === 'OPTIONS') {
+        res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
+        res.header('Access-Control-Allow-Headers', requestHeaders);
+        return res.end();
+    }
+
+    next();
 };
-
-module.exports = cors;

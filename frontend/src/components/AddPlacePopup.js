@@ -1,84 +1,58 @@
-import React from "react"
-import PopupWithForm from "./PopupWithForm"
+import { useState, useEffect } from 'react';
+import PopupWithForm from './PopupWithForm';
+
 
 export default function AddPlacePopup(props) {
 
-    const [title, setTitle]=React.useState('')
-    const [link, setLink]=React.useState('')
+  const [link, setLink] = useState('');
+  const [name, setName] = useState('');
 
+  useEffect(() => {
+    setLink('');
+    setName('')
+  }, [props.isOpen])
 
-    function handleSetTitle(evt) {
-        setTitle(evt.target.value)
-    }
+  function handleSubmit(e) {
+    e.preventDefault();
+    props.onAddPlace({
+      link,
+      name
+    });
+  }
 
-    function handleSetLink(evt) {
-        setLink(evt.target.value)
-    }
-
-
-    function handleSubmit(e) {
-        // Запрещаем браузеру переходить по адресу формы
-        e.preventDefault();
-      
-        // Передаём значения управляемых компонентов во внешний обработчик
-        props.onSubmit({
-            name: title,
-            link: link,
-        });
-    }
-
-
-    //Очистка полей формы при открытии 
-
-    React.useEffect(() => {
-        if (props.isOpen) {
-            setTitle('')
-            setLink('')
-        }
-    }, [props.isOpen])
-
-
-    return(
-        <PopupWithForm
-                isOpen={props.isOpen}
-                onClose={props.onClose}
-                onSubmit={handleSubmit}
-                onClickOnOverlay={props.onClickOnOverlay}
-                form={'add-image'}
-                title={'Новое место'}
-                buttonText={'Создать'}
-
-                children={(
-                    <>
-                        <input 
-                            onChange={handleSetTitle}
-                            value={title}
-                            type='text'
-                            className='popup__name popup__input'
-                            name="name"
-                            id="new-card-title"
-                            maxLength="30"
-                            minLength="2"
-                            placeholder='Название'
-                            required
-                        />
-                        <span className="popup__new-card-title-error"/>
-
-                        <input 
-                            onChange={handleSetLink}
-                            value={link}
-                            type='url'
-                            className='popup__name popup__input'
-                            name="link"
-                            id="new-card-link"
-                            placeholder='Ссылка на картинку'
-                            required
-                        />
-
-                        <span className="popup__new-card-link-error"/>
-
-                    </>
-                )}
-            />
-    )
+  return (
+    <PopupWithForm
+      name="new-card"
+      title="Новое место"
+      isOpen = {props.isOpen}
+      onClose = {props.onClose}
+      buttonText="Создать"
+      onSubmit={handleSubmit}
+    >
+      <input
+        type="text"
+        className="popup__input popup__input_value_pic-name"
+        placeholder="Название"
+        name="picName"
+        id="pic-name"
+        minLength="2"
+        maxLength="30"
+        required
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+      <span className="title-error popup__form-error"></span>
+      <input
+        type="url"
+        className="popup__input popup__input_value_link"
+        placeholder="Ссылка на картинку"
+        name="picLink"
+        id="pic-link"
+        required
+        value={link}
+        onChange={(e) => setLink(e.target.value)}
+      />
+      <span className ="link-error popup__form-error popup__form-error_pos_under"></span>
+    </PopupWithForm>
+  )
 }

@@ -1,11 +1,10 @@
-import React from 'react';
-
-export default function Footer() {
-    return(
-        <footer>
-            <p className="copyright">
-                © {new Date().getFullYear()} Mesto Russia by Arsen
-            </p>
-        </footer>
+function Footer() {
+  const currentDate = new Date()
+    return (
+    <footer className="footer">
+      <p className="footer__author">&copy; {currentDate.getFullYear()}. Mesto-React. Марина Вириялова</p>
+    </footer>
     )
-}
+  }
+  
+  export default Footer;
