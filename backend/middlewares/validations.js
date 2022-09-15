@@ -50,4 +50,5 @@ module.exports = {
   validateUserAvatar,
   validateUserCard,
   validateId,
+  validateURL,
 };

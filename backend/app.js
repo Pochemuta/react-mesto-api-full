@@ -11,12 +11,14 @@ const {
   isCelebrateError,
 } = require('celebrate');
 const cors = require('cors');
+const { default: isURL } = require('validator/lib/isURL');
 const userRouter = require('./routes/users');
 const cardRouter = require('./routes/cards');
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/NotFoundError');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { validateURL } = require('./middlewares/validations');
 
 const { PORT = 3000 } = process.env;
 
@@ -45,7 +47,7 @@ app.post('/signup', celebrate({
     password: Joi.string().required().min(3),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(/(https||http)\:\/\/(w{3}.)?[a-z0-9\-\.\_\~\:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=]+\#?$/),
+    avatar: Joi.string().custom(validateURL),
   }).unknown(true),
 }), createUser);
 
