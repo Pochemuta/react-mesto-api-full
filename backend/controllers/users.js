@@ -5,7 +5,7 @@ const ErrorConflict = require('../errors/ErrorConflict');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 const NotFoundError = require('../errors/NotFoundError');
 
-const { JWT_SECRET } = process.env;
+const { JWT_SECRET = 'some-secret-key' } = process.env;
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
@@ -15,13 +15,14 @@ module.exports.login = (req, res, next) => {
         throw new UnauthorizedError('Передан неверный логин или пароль');
       }
       const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '7d' });
-      res.send({         
+      res.send({
         name: user.name,
         about: user.about,
         avatar: user.avatar,
         _id: user.id,
         email: user.email,
-        token});
+        token,
+      });
       res.send({ message: 'Аутентификация прошла успешно' });
     })
     .catch(next);
