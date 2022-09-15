@@ -1,10 +1,14 @@
 .profile__info {
-    margin: 0 auto 0 20px;
+  display: grid;
+  grid-template-areas:
+    "name edit-button"
+    "job job";
+  grid-gap: 16px 18px;
 }
 
-@media screen and (max-width: 980px) {
-    .profile__info {
-        flex-direction: column;
-        margin: 12px auto 36px;
-    }
+@media screen and (max-width: 767px) {
+  .profile__info {
+    grid-gap: 14px 10px;
+    text-align: center;
+  }
 }

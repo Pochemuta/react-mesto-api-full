@@ -1,41 +1,50 @@
-import { useRef, useEffect } from 'react';
+import React from 'react';
 import PopupWithForm from './PopupWithForm';
 
+function EditAvatarPopup(props) {
+  // Реф ссылки на картинку
+  const avatarLink = React.useRef('');
 
-export default function EditAvatarPopup(props) {
-
-  const inputAvatarUrlRef = useRef();
-
-  useEffect(() => {
-    inputAvatarUrlRef.current.value = '';
-  }, [props.isOpen])
-
-  function handleSubmit(e) {
-    e.preventDefault();
+  // Обработчик формы
+  function handleSubmit(evt) {
+    evt.preventDefault();
     props.onUpdateAvatar({
-      avatar: inputAvatarUrlRef.current.value
+      avatar: avatarLink.current.value
     });
   }
 
+  // Очистка поля ввода при закрытии попапа
+  React.useEffect(() => {
+    if (!props.isOpen) {
+      avatarLink.current.value = '';
+    }
+  }, [props.isOpen]);
 
   return (
     <PopupWithForm
-      name="edit-avatar"
-      title="Обновить аватар"
+      name='edit-avatar'
+      title='Обновить аватар'
+      textButton='Сохранить'
       isOpen={props.isOpen}
-      onClose = {props.onClose}
-      buttonText="Сохранить"
+      isLoading={props.isLoading}
       onSubmit={handleSubmit}
+      onPopupClick={props.onPopupClick}
+      onClose={props.onClose}
     >
-      <input
-        ref={inputAvatarUrlRef}
-        type="url"
-        className="popup__input popup__input_value_link"
-        placeholder="Ссылка на аватар"
-        name="avatarLink"
-        id="avatar-link"
-        required/>
-      <span className="avatar-link-error popup__form-error-msg"></span>
+      <label className='popup__input-element'>
+        <input
+          type='url'
+          placeholder='Ссылка на картинку'
+          className='popup__input popup__input_type_avatar-link'
+          id='input-avatar-link'
+          name='avatarUser'
+          ref={avatarLink}
+          required
+        />
+        <span className='popup__input-error' id='input-avatar-link-error'/>
+      </label>
     </PopupWithForm>
   )
 }
+
+export default EditAvatarPopup;

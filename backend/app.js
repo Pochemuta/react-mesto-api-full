@@ -1,78 +1,57 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const { errors, celebrate, Joi } = require('celebrate');
-const cookieParser = require('cookie-parser');
+require('dotenv').config();
 const bodyParser = require('body-parser');
-const userRouter = require('./routes/users');
-const cardRouter = require('./routes/cards');
-const { login, createUser } = require('./controllers/users');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const { errors } = require('celebrate');
+const routes = require('./routes');
+const { PORT, DB_ADDRESS } = require('./utils/config');
+const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
-const NotFoundError = require('./errors/NotFoundError');
-const cors = require('./middlewares/cors');
+const errorHandler = require('./middlewares/error-handler');
+const { signupValidation, signinValidation } = require('./middlewares/joi-validation');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
-const { PORT = 3000 } = process.env;
 const app = express();
-const regExp = /^https?:\/\/(www.)?[a-zA-Z0-9-.]+\.[a-zA-Z]{2,}([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+)*#*$/;
+// Подключение к БД
+mongoose.connect(DB_ADDRESS, {
+  useNewUrlParser: true,
+});
+
+// CORS
+const corsOptions = {
+  origin: [
+    'https://mesto-frontend.andrey-g.nomoredomains.xyz',
+    'http://mesto-frontend.andrey-g.nomoredomains.xyz',
+    'http://localhost:3001',
+  ],
+  credentials: true,
+};
+app.use(cors(corsOptions));
+
+// Сборка данных в JSON-формат
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(requestLogger);
+// Парсер кук
 app.use(cookieParser());
-app.use(cors);
+// Логгер запросов
+app.use(requestLogger);
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-    useNewUrlParser: true,
-}, (err) => {
-    if (err) {
-        console.error('Ошибка подключения к базе данных', err);
-    }
-});
-
-app.get('/crash-test', () => {
-    setTimeout(() => {
-        throw new Error('Сервер сейчас упадёт');
-    }, 0);
-});
-
-app.post(
-    '/signin',
-    celebrate({
-        body: Joi.object().keys({
-            email: Joi.string().email().required(),
-            password: Joi.string().min(8).required(),
-        }),
-    }),
-    login,
-);
-
-app.post(
-    '/signup',
-    celebrate({
-        body: Joi.object().keys({
-            email: Joi.string().email().required(),
-            password: Joi.string().min(8).required(),
-            name: Joi.string().min(2).max(30),
-            about: Joi.string().min(2).max(30),
-            avatar: Joi.string().pattern(regExp),
-        }),
-    }),
-    createUser,
-);
+// Роуты регистрации и авторизации (незащищенные)
+app.post('/signup', signupValidation, createUser);
+app.post('/signin', signinValidation, login);
+// Мидлвэр авторизации
 app.use(auth);
-app.use('/users', userRouter);
-app.use('/cards', cardRouter);
+// Остальные роуты (защищенные)
+app.use(routes);
 
-app.use((req, res, next) => {
-    next(new NotFoundError('Страница не найдена'));
-});
+// Логгер ошибок
 app.use(errorLogger);
+// Обработчик ошибок celebrate
 app.use(errors());
+// Обработчик ошибок
+app.use(errorHandler);
 
-app.use((err, req, res, next) => {
-    res.status(err.statusCode || 500);
-    res.send({ message: err.message || 'Неизвестная ошибка' });
-    next();
-});
 app.listen(PORT, () => {
-    console.info(`Server is running on port ${PORT}`);
+  console.log(`App started on port ${PORT}`);
 });

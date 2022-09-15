@@ -1,55 +1,47 @@
-import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import React from 'react';
+import {Link} from 'react-router-dom';
+import AuthForm from './AuthForm';
 
 
-export default function Register({ onRegisterSubmit }) {
+function Register(props) {
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  // Стейты инпутов
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    onRegisterSubmit(password, email);
+  // Обработчики изменения состояния инпутов
+  function handleChangeEmail(evt) {
+    setEmail(evt.target.value);
   }
 
+  function handleChangePassword(evt) {
+    setPassword(evt.target.value);
+  }
+
+  // Обработчик формы
+  function handleSubmit(evt) {
+    evt.preventDefault();
+    props.onRegister({email, password});
+  }
+
+
   return (
-    <div className="register">
-      <h3 className="register__title">Регистрация</h3>
-      <form className={`register__form`} onSubmit = {handleSubmit}>
-
-        <input
-          type="email"
-          className="register__input"
-          placeholder="E-mail"
-          name="email"
-          id="email"
-          required
-          value={email || ''}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <input
-          type="password"
-          className="register__input"
-          placeholder="Пароль"
-          name="password"
-          id="password"
-          required
-          value={password || ''}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <button
-          type="submit"
-          className="register__submit"
-          aria-label="Отправить данные"
-        >Зарегистрироваться</button>
-
-      </form>
-      <div className="register__login">
-        <p>Уже зарегистрированы?&nbsp;</p>
-        <Link to="login" className="register__login-link">Войти</Link>
+    <div className='auth auth_type_registr container__auth'>
+      <AuthForm
+        isForm={'registr'}
+        isEmail={email}
+        isPassword={password}
+        onEmail={handleChangeEmail}
+        onPassword={handleChangePassword}
+        onSubmit={handleSubmit}
+        textButton={'Зарегистрироваться'}
+      />
+      <div className='auth__sign-in'>
+        <p className='auth__registration-request-text'>Уже зарегистрированы?</p>
+        <Link to='/sign-in' className='auth__login-link'>Войти</Link>
       </div>
     </div>
   )
 }
+
+export default Register;

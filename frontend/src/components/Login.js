@@ -1,50 +1,42 @@
-import { useState } from 'react';
+import React from 'react';
+import AuthForm from './AuthForm';
 
+function Login(props) {
+  // Стейты инпутов
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
 
-export default function Login({ onLoginSubmit }) {
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    onLoginSubmit(password, email);
+  // Обработчики изменения состояния инпутов
+  function handleChangeEmail(evt) {
+    setEmail(evt.target.value);
   }
 
+  function handleChangePassword(evt) {
+    setPassword(evt.target.value);
+  }
+
+  // Обработчик формы
+  function handleSubmit(evt) {
+    evt.preventDefault();
+    props.onLogin({email, password});
+  }
+
+
   return (
-    <div className="login">
-      <h3 className="login__title">Вход</h3>
-      <form className={`login__form`} onSubmit = {handleSubmit}>
+    <div className='auth auth_type_login container__auth'>
+      <AuthForm
+        isForm={'login'}
+        isEmail={email}
+        isPassword={password}
+        onEmail={handleChangeEmail}
+        onPassword={handleChangePassword}
+        onSubmit={handleSubmit}
+        textButton={'Войти'}
+      />
 
-        <input
-          type="email"
-          className="login__input"
-          placeholder="E-mail"
-          name="email"
-          id="email"
-          required
-          value={email || ''}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <input
-          type="password"
-          className="login__input"
-          placeholder="Пароль"
-          name="password"
-          id="password"
-          required
-          value={password || ''}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <button
-          type="submit"
-          className="login__submit"
-          aria-label="Отправить данные"
-        >Войти</button>
-
-      </form>
+      <div className='auth__sign-up'></div>
     </div>
   )
 }
+
+export default Login;

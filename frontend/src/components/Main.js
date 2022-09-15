@@ -1,33 +1,58 @@
-import Profile from './Profile';
+import React from 'react';
+import {CurrentUserContext} from '../contexts/CurrentUserContext';
 import Card from './Card';
-import CardsSection from './CardsSection';
-import { CurrentUserContext } from '../contexts/CurrentUserContext';
-import { useContext } from 'react';
 
 
-export default function Main(props) {
+function Main(props) {
+  // Подписка на контекст данных пользователя
+  const currentUser = React.useContext(CurrentUserContext);
 
-  const currentUser = useContext(CurrentUserContext);
 
   return (
-    <main>
-      <Profile
-        currentUser = {currentUser}
-        {...props}
-      />
-      <CardsSection>
-        {props.cards.map(card => {
-            return (<Card
-              key = {card._id}
-              card = {card}
-              onCardDelete = {props.onCardDelete}
-              onCardClick = {props.onCardClick}
-              onCardLike = {props.onCardLike}
-
-            />)
-          })
-        }
-      </CardsSection>
+    <main className='content container__content'>
+      {/* Profile */}
+      <section className='profile'>
+        <div className='profile__user-data'>
+          <button className='profile__edit-avatar' type='button' onClick={props.onEditAvatar}>
+            <img
+              src={currentUser.avatar}
+              alt='Фотография пользователя'
+              className='profile__avatar'
+            />
+          </button>
+          <div className='profile__info'>
+            <h1 className='profile__name'>{currentUser.name}</h1>
+            <p className='profile__job'>{currentUser.about}</p>
+            <button
+              className='profile__edit-button'
+              type='button'
+              onClick={props.onEditProfile}
+            />
+          </div>
+        </div>
+        <button
+          className='profile__add-button'
+          type='button'
+          onClick={props.onAddPlace}
+        />
+      </section>
+      {/* Photo gallery */}
+      <section className='card-gallery content__card-gallery'>
+        {props.cards.map((card) => (
+          <Card
+            card={card}
+            name={card.name}
+            link={card.link}
+            likes={card.likes.length}
+            onCardClick={props.onCardClick}
+            onCardLike={props.onCardLike}
+            onCardDelete={props.onCardDelete}
+            key={card._id}
+          />
+        ))}
+      </section>
     </main>
   )
 }
+
+export default Main;

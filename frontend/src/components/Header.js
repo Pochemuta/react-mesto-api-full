@@ -1,25 +1,52 @@
-import { Route, Switch, Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
+import logo from '../images/header-logo.svg'
 
 
-function Header({ onSignOut, userData }) {
+function Header(props) {
 
   return (
-    <header className="header">
-      <div className="header__logo"></div>
-      <Switch>
-        <Route exact path="/">
-          <div className="header__user-email-logout">
-            <p className="header__user-email">{userData.email}</p>
-            <Link to="login" className="header__logout-link" onClick = {onSignOut}>Выйти</Link>
+    <header className='header container__header'>
+      {props.isLogged ?
+        <div className='header__content header__content_type_login'>
+          <input id='header__menu-toggle' className='header__menu-toggle' type='checkbox'/>
+          <div className='header__logo-container'>
+            <img
+              className='header__logo'
+              src={logo}
+              alt='Логотип Место'
+            />
+            <label className='header__menu' htmlFor='header__menu-toggle'>
+              <span className='header__menu-item'></span>
+            </label>
           </div>
-        </Route>
-        <Route path="/register">
-          <Link to="login" className="header__login-link">Войти</Link>
-        </Route>
-        <Route path="/login">
-          <Link to="register" className="header__login-link">Регистрация</Link>
-        </Route>
-      </Switch>
+          <div className='header__user'>
+            <p className='header__user-email'>{props.emailUser}</p>
+            <Link
+              to={props.link}
+              className='header__user-signout'
+              onClick={props.onSignOut}
+            >
+              {props.textAuth}
+            </Link>
+          </div>
+        </div>
+        :
+        <div className='header__content header__content_type_logout'>
+          <img
+            className='header__logo'
+            src={logo}
+            alt='Логотип Место'
+          />
+          <Link
+            to={props.link}
+            className='header__link'
+            onClick={props.onSignOut}
+          >
+            {props.textAuth}
+          </Link>
+        </div>
+      }
+
     </header>
   )
 }

@@ -1,23 +1,34 @@
-export default function InfoTooltip(props) {
-    return (
-      <div
-        className={`popup popup_type_${props.name} ${props.isOpen ? 'popup_opened' : ''}`}
-        onClick = {props.onClose}
-      >
-  
-        <div className="popup__container" onClick = {(e) => e.stopPropagation()}>
-          <button
-              type="button"
-              className="popup__close"
-              aria-label="Закрыть окно"
-              onClick={props.onClose}
-          ></button>
-  
-          <div className={`popup__success ${props.isSuccess ? "" : "popup__success_type_unsuccess"}`} ></div>
-  
-          <h3 className="popup__title popup__title_type_info-tooltip">{`${props.isSuccess ? "Вы успешно зарегистрировались!" : "Что-то пошло не так! Попробуйте еще раз."}`}</h3>
-  
-        </div>
+import React from 'react';
+
+function InfoTooltip(props) {
+
+  return (
+    <div className={`popup ${props.isOpen ? 'popup_active' : ''} popup_type_info-tooltip`}
+         onMouseDown={props.onPopupClick}
+    >
+      <div className='popup__container'>
+        <div
+          className={`popup__image popup__image_type_${props.status ? 'success' : 'error'}`}
+        ></div>
+        <p className='popup__status-text'>
+          {props.status
+            ?
+            'Вы успешно зарегистрировались!'
+            :
+            'Что-то пошло не так! Попробуйте ещё раз.'
+          }
+        </p>
+        <button
+          className='popup__close'
+          type='button'
+          onClick={props.onClose}
+        />
       </div>
-    )
-  }
+
+
+    </div>
+  )
+
+}
+
+export default InfoTooltip;

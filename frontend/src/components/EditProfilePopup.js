@@ -1,64 +1,89 @@
-import { useState, useContext, useEffect } from 'react';
+import React from 'react';
+import {CurrentUserContext} from '../contexts/CurrentUserContext';
 import PopupWithForm from './PopupWithForm';
-import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
+function EditProfilePopup(props) {
+  // Подписка на контекст данных пользователя
+  const currentUser = React.useContext(CurrentUserContext);
 
-export default function EditProfilePopup(props) {
+  // Стейт-переменные:
+  // - инпут с именем пользователя
+  const [name, setName] = React.useState('');
+  // - инпут с информацией о пользователе
+  const [description, setDescription] = React.useState('');
 
-  const currentUser = useContext(CurrentUserContext);
+  // Запись и очистка данных пользователя в инпуты при открытии и закрытии попапа соответственно
+  React.useEffect(() => {
+    if (props.isOpen) {
+      setName(currentUser.name);
+      setDescription(currentUser.about);
+    } else {
+      setName('');
+      setDescription('');
+    }
+  }, [props.isOpen, currentUser]);
 
-  const [name, setName] = useState(currentUser.name);
-  const [description, setDescription] = useState(currentUser.about);
+  // Обработчики изменения инпутов
+  function handleChangeName(evt) {
+    setName(evt.target.value);
+  }
 
-  useEffect(() => {
-    setName(currentUser.name);
-    setDescription(currentUser.about);
-}, [currentUser, props.isOpen]);
+  function handleChangeDescription(evt) {
+    setDescription(evt.target.value);
+  }
 
-
-  function handleSubmit(e) {
-    e.preventDefault();
+  // Обработчик формы
+  function handleSubmit(evt) {
+    evt.preventDefault();
     props.onUpdateUser({
       name,
-      about: description,
+      about: description
     });
   }
 
   return (
     <PopupWithForm
-      name="edit"
-      title="Редактировать профиль"
-      isOpen = {props.isOpen}
-      onClose = {props.onClose}
-      buttonText="Сохранить"
-      onSubmit = {handleSubmit}
+      name='edit-profile'
+      title='Редактировать профиль'
+      textButton='Сохранить'
+      isOpen={props.isOpen}
+      isLoading={props.isLoading}
+      onSubmit={handleSubmit}
+      onPopupClick={props.onPopupClick}
+      onClose={props.onClose}
     >
-      <input
-        type="text"
-        className="popup__input popup__input_text_name"
-        placeholder="Имя"
-        name="userName"
-        id="user-name"
-        minLength="2"
-        maxLength="40"
-        required
-        value={name || ''}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <span className="name-error popup__form-error"></span>
-      <input
-        type="text"
-        className="popup__input popup__input_text_work"
-        placeholder="Род деятельности"
-        name="userJob"
-        id="user-job"
-        minLength="2"
-        maxLength="200"
-        required
-        value={description || ''}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      <span className="profession-error popup__form-error popup__form-error_pos_under"></span>
+      <label className='popup__input-element'>
+        <input
+          type='text'
+          placeholder='Ваше имя'
+          className='popup__input popup__input_type_profile-name'
+          id='input-profile-name'
+          name='nameUser'
+          value={name}
+          onChange={handleChangeName}
+          required
+          minLength={2}
+          maxLength={40}
+        />
+        <span className='popup__input-error' id='input-profile-name-error'/>
+      </label>
+      <label className='popup__input-element'>
+        <input
+          type='text'
+          placeholder='Чем занимаетесь'
+          className='popup__input popup__input_type_profile-job'
+          id='input-profile-job'
+          name='infoUser'
+          value={description}
+          onChange={handleChangeDescription}
+          required
+          minLength={2}
+          maxLength={200}
+        />
+        <span className='popup__input-error' id='input-profile-job-error'/>
+      </label>
     </PopupWithForm>
   )
 }
+
+export default EditProfilePopup;
