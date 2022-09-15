@@ -1,17 +1,27 @@
-const profilePopup = document.querySelector('.popup_profile');
-const profilePopupForm = profilePopup.querySelector('.popup__submit-form')
+export const editPopupElement = document.querySelector('.popup_type_edit');//попап для редактирования профиля
+export const editPopupOpenButtonElement = document.querySelector('.profile__edit-button');//кнопка для открытия попапа редактирования профиля
+export const editFormElement = editPopupElement.querySelector('.popup__form');//форма попапа редактирования профиля
+export const nameInput = editFormElement.querySelector('#name-field');//поле ввода из формы попапа редактирования профиля
+export const jobInput = editFormElement.querySelector('#profession-field');//поле ввода из формы попапа редактирования профиля
 
-const profileElement = document.querySelector('.profile');
-const profileEditButton = profileElement.querySelector('.profile__edit-button');
+export const cardPopupElement = document.querySelector('.popup_type_card');//попап для добавления карточек
+export const cardPopupOpenButtonElement = document.querySelector('.profile__add-button');//кнопка для открытия попапа добавления карточек
 
-const cardAddButton = profileElement.querySelector('.profile__add-button');
+export const addFormElement = cardPopupElement.querySelector('.popup__form');//форма попапа добавления карточек
 
-const cardAddPopup = document.querySelector('.popup-add');
-const cardAddForm = cardAddPopup.querySelector('.popup__submit-form')
+export const avatarPopup = document.querySelector('.popup_type_avatar');
+export const avatarFormElement = avatarPopup.querySelector('.popup__form');
+export const avatarFormElementInput = avatarFormElement.querySelector('#avatar-field');
+//export const avatar = document.querySelector('.profile__image');
+export const avatarPopupOpenButtonElement = document.querySelector('.profile__pen');
 
-const avaEditPopup = document.querySelector('.popup-ava-edit');
-const avaEditButton = document.querySelector('.profile__avatar-edit');
+export const config = {
+    formSelector: '.popup__form',
+    inputSelector: '.popup__field',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_invalid',
+    inputErrorClass: 'popup__field_invalid',
+    errorClass: 'popup__error'
+  };
 
-const avaImg = document.querySelector('.profile__avatar');
-
-export { profilePopup, profilePopupForm, profileElement, profileEditButton, cardAddButton, cardAddPopup, cardAddForm, avaEditPopup, avaEditButton, avaImg }
+  

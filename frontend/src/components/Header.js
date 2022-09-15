@@ -1,29 +1,36 @@
-import headerLogoPath from '../images/header__logo.svg';
-import { Link, useLocation } from 'react-router-dom';
-import { CurrentUserContext } from '../context/CurrentUserContext';
 import React from 'react';
+import logo from '../images/Vector.svg';
+import { Link, Route } from "react-router-dom";
 
-export default function Header(props) {
-  const user = React.useContext(CurrentUserContext);
-  const location = useLocation();
-  let headerButton;
-  let userEmailElement = '';
-  if (location.pathname === '/sign-in') {
-    headerButton = (<Link className="button header__button" to="sign-up">Регистрация</Link>);
-  } else if (location.pathname === '/sign-up') {
-    headerButton = (<Link className="button header__button" to="sign-in">Войти</Link>);
-  } else if (props.loggedIn) {
-    userEmailElement = (<p className="header__email">{user.email}</p>);
-    headerButton = (<Link onClick={props.onLogOut} className="button header__button" to="sign-in">Выйти</Link>);
-  }
-
+function Header({ onLogOut, email }) {
   return (
-    <header className="header">
-      <img alt="Логотип Mesto" className="header__logo" src={headerLogoPath}/>
-      <div className="header__info">
-        {userEmailElement}
-        {headerButton}
-      </div>
+
+    <header className="header container__header">
+      <img className="header__logo" src={logo} alt="Лого" />
+      <Route path='/sign-up'>
+        <Link to="/sign-in" className="header__auth">
+          Войти
+        </Link>
+      </Route>
+
+      <Route path='/sign-in'>
+        <Link to="/sign-up" className="header__auth">
+          Регистрация
+        </Link>
+      </Route>
+
+      <Route exact path='/'>
+        <div className='header__nav'>
+          <p className="header__email">{email}</p>
+          <Link to="/sign-in" className="header__sign-out" onClick={onLogOut}>
+            Выйти
+          </Link>
+        </div>
+      </Route>
+
     </header>
+
   );
 }
+
+export default Header;

@@ -1,15 +1,25 @@
-.profile__info {
-  display: grid;
-  gap: 16px 18px;
-  grid-template-columns: min-content auto;
-  grid-template-rows: repeat(2, min-content);
+/*.profile__info {
+    display: grid;
+    grid-template-columns: 120px 1fr 42px;
 }
 
-@media screen and (max-width: 758px) {
-  .profile__info {
-    gap: 14px 10px;
-    justify-content: center;
-    margin-bottom: 36px;
-    text-align: center;
+@media screen and (max-width: 690px) {
+    .profile__info {
+        display: grid;
+        grid-template-areas:
+        "profile__image profile__image"
+        "profile__text profile__edit-button"
+    }
+}*/
+
+.profile__info {
+    display: flex;
+    align-items: center;
   }
-}
+
+  @media screen and (max-width: 690px) {
+    .profile__info {
+        flex-direction: column;
+        text-align: center;
+      }
+  }

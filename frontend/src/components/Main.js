@@ -1,33 +1,43 @@
-import React from 'react';
-import Card from './Card';
-import { CurrentUserContext } from '../context/CurrentUserContext';
+import React, { useContext } from "react";
+import Card from "./Card";
+import { CurrentUserContext, CurrentUserContext1 } from '../contexts/CurrentUserContext';
 
-export default function Main(props) {
-  const user = React.useContext(CurrentUserContext);
+function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardClick, onCardLike, onCardDelete }) {
+
+  const translation = useContext(CurrentUserContext);
+  const translationCards = useContext(CurrentUserContext1);
 
   return (
-    <>
-      <section className="profile">
-        <div className="profile__image-container"
-             onClick={props.onEditAvatar}>
-          <img alt="Аватар профиля" className="profile__avatar"
-               src={user.avatar}/>
-        </div>
+
+    <main>
+      <section className="profile container__profile">
         <div className="profile__info">
-          <h1 className="profile__title">{user.name}</h1>
-          <p className="profile__subtitle">{user.about}</p>
-          <button className="profile__edit-button"
-                  onClick={props.onEditProfile} type="button">
-          </button>
+          <img className="profile__image" src={translation.avatar} alt="Лого" />
+          <button className="profile__pen" onClick={onEditAvatar} />
+          <div className="profile__text">
+            <div className="profile__title">
+              <h1 className="profile__name">{translation.name}</h1>
+              <button type="button" className="profile__edit-button" onClick={onEditProfile}></button>
+            </div>
+            <p className="profile__description">{translation.about}</p>
+          </div>
         </div>
-        <button className="profile__add-button" type="button"
-                onClick={props.onAddPlace}>
-        </button>
+        <button type="button" className="profile__add-button" onClick={onAddPlace}></button>
       </section>
-      <section className="places">
-        {props.cards.map((card) => <Card key={card._id} onCardDelete={props.onCardDelete} onCardLike={props.onCardLike}
-                                         onCardClick={props.onCardClick} card={card}/>)}
-      </section>
-    </>
+      <ul className="elements container__elements">
+        {
+          translationCards.map((card) => <Card
+            key={card._id}
+            card={card}
+            onCardClick={onCardClick}
+            onCardLike={onCardLike}
+            onCardDelete={onCardDelete}
+          />)
+        }
+      </ul>
+    </main>
+
   );
 }
+
+export default Main;

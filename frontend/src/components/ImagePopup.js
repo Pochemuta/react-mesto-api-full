@@ -1,16 +1,14 @@
-export default function ImagePopup(props) {
-  return (
-    <div className={`popup popup-viewer ${props.card ? 'popup_opened' : ''}`}>
-      <figure className="popup-viewer__container">
-        <button onClick={props.onClose} className="popup-viewer__close-button popup__close-button"
-                type="button">
-        </button>
-        <img alt={props.card.name} className="popup-viewer__image"
-             src={props.card.link}/>
-        <figcaption className="popup-viewer__caption">
-          <p className="popup-viewer__text">{props.card.name}</p>
-        </figcaption>
-      </figure>
-    </div>
-  );
+function ImagePopup({card, onClose}) {
+  
+    return (
+        <div className={`popup popup-image ${(card.title && card.src) ? 'popup_is-opened' : ''}`}>
+            <div className="popup-image__containers">
+              <img className="popup-image__img" alt={card.title} src={card.src}/>
+              <h3 className="popup-image__text">{card.title}</h3>
+              <button type="button" className="popup__close-button" onClick={onClose} />
+            </div>
+          </div>
+    )
 }
+
+export default ImagePopup

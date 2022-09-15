@@ -1,44 +1,61 @@
-import { Link } from 'react-router-dom';
-import React from 'react';
+import React, {useState} from "react";
+import { Link } from "react-router-dom";
 
-export default function Register(props) {
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+function Register({handleRegister}) {
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
 
-  const handleChangeEmail = (evt) => {
-    setEmail(evt.target.value);
-  };
-
-  const handleChangePassword = (evt) => {
+  function handleChangePassword(evt) {
     setPassword(evt.target.value);
   };
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    props.onUserRegister({
-      email, password,
-    });
-  }
+  function handleChangeEmail(evt) {
+    setEmail(evt.target.value);
+  };
 
-  return (
-    <div className="auth page__block_type_auth">
-      <h1 className="title auth__title">Регистрация</h1>
-      <form onSubmit={handleSubmit} action="/src/index.html"
-            className="form auth__form" method="post"
-            name="register">
-        <fieldset name="user-field" className="fieldset form__fieldset">
-          <input onChange={handleChangeEmail} value={email} name="email"
-                 className="input input_type_form input_theme_dark"
-                 type="email" placeholder="Email"/>
-          <input onChange={handleChangePassword} value={password} name="password"
-                 className="input input_type_form input_theme_dark"
-                 type="password" placeholder="Пароль"/>
-        </fieldset>
-        <button className="button button_theme_dark button_type_form-submit" type="submit">
-          Зарегистрироваться
-        </button>
-      </form>
-      <p className="notice auth__notice">Уже зарегистрированы? <Link className="link" to="/sign-in">Войти</Link></p>
-    </div>
-  );
-}
+  function handleSubmit(evt) {
+    evt.preventDefault();
+
+    handleRegister(password, email)
+  };
+
+    return (
+      
+      <div className="register">
+        <p className="register__title">Регистрация</p>
+        <form onSubmit={handleSubmit} className="register__form">
+          <input 
+          className="register__email-field register__field" 
+          placeholder="Email"
+          name="email"
+          type="email"
+          id="email-field"
+          value={email}
+          onChange={handleChangeEmail}
+          autoComplete="off"
+          required
+          />
+          <input 
+          className="register__password-field register__field" 
+          placeholder="Пароль"
+          name="password"
+          type="text"
+          id="password-field"
+          value={password}
+          onChange={handleChangePassword}
+          autoComplete="off"
+          required
+          type='password'
+          />
+          <button type="submit" className="register__submit-button">Зарегистрироваться</button>
+        </form>
+        <div className="register__signin">
+          <p className="register__signin-text">Уже зарегистрированы?</p>
+          <Link to="/sign-in" className="register__login-link">Войти</Link>
+        </div>
+      </div>
+      
+              );
+  }
+  
+  export default Register;

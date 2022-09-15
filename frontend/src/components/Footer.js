@@ -1,9 +1,11 @@
-export default function Footer(props) {
-  const currentDate = new Date();
+function Footer() {
   return (
-    <footer className="footer">
-      <p className="footer__copyright">&copy; {currentDate.getFullYear()} Mesto
-        Russia</p>
+    
+    <footer className="footer container__footer">
+        <p className="footer__copyrate">&copy; {new Date().getFullYear()}</p>
     </footer>
-  );
-};
+    
+            );
+}
+
+export default Footer;
