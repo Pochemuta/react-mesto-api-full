@@ -4,6 +4,7 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRquestError = require('../errors/BadRequestError');
 const DublicateError = require('../errors/DublicateError');
+const UnauthorizedError = require('../errors/UnauthorizedError')
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -31,7 +32,7 @@ module.exports.login = (req, res, next) => {
     })
     .catch((err) => {
       console.log(err);
-      next(new DublicateError(err.message));
+      next(new UnauthorizedError(err.message));
     });
 };
 
