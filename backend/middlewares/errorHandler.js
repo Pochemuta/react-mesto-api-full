@@ -1,8 +1,9 @@
 const errorHandler = (err, req, res, next) => {
   console.log(err.stack || err);
   const status = err.statusCode || 500;
+  const message = err.message
 
-  res.status(status).send({ err });
+  res.status(status).send({ message });
   next();
 };
 
