@@ -44,7 +44,6 @@ exports.updateUserAvatar = (req, res, next) => {
 
 exports.getUsers = (req, res, next) => {
   User.find({})
-    .then(res.status(200))
     .then((users) => res.send(users))
     .catch(next);
 };
