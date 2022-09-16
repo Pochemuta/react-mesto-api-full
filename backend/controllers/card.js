@@ -57,7 +57,7 @@ exports.deleteCardLike = async (req, res, next) => {
     if (card) {
       await Card.findByIdAndUpdate(
         cardId,
-        { $pull: { likes: req.user } },
+        { $pull: { likes: req.user._id } },
         { new: true },
       );
       res.status(200).send(card);
@@ -80,7 +80,7 @@ exports.putCardLike = async (req, res, next) => {
     if (card) {
       await Card.findByIdAndUpdate(
         cardId,
-        { $addToSet: { likes: req.user } },
+        { $addToSet: { likes: req.user._id } },
         { new: true },
       );
       res.status(200).send(card);
