@@ -1,7 +1,0 @@
-.popup-change-avatar__input {
-  margin: 36px auto 48px;
-}
-
-.popup-change-avatar__input:invalid {
-  margin-bottom: 0;
-}
